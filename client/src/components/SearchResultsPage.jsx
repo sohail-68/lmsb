@@ -162,7 +162,7 @@ const SearchResultsPage = () => {
                     }}
                   >
                     <img
-                      src={`http://localhost:5000/${course.courseThumbnail}`}
+                      src={`learningm-production.up.railway.app/${course.courseThumbnail}`}
                       alt={course.title}
                       style={{
                         width: '100%',

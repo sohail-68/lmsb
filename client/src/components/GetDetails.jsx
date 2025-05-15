@@ -143,7 +143,7 @@ console.log(orderData);
           component="img"
           alt={course.title}
           height="400"
-          image={`http://localhost:5000/${course.courseThumbnail}`}
+          image={`learningm-production.up.railway.app/${course.courseThumbnail}`}
           sx={{ objectFit: "cover", borderRadius: "16px 0 0 16px" }}
         />
       </Grid>

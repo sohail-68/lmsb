@@ -18,7 +18,7 @@ const CreateCourse = () => {
   const [courseThumbnail, setCourseThumbnail] = useState(null);
   const [imagePreview, setImagePreview] = useState(
     existingCourse.courseThumbnail
-      ? `http://localhost:5000/${existingCourse.courseThumbnail.replace(/\\/g, '/')}`
+      ? `learningm-production.up.railway.app/${existingCourse.courseThumbnail.replace(/\\/g, '/')}`
       : null
   );
 
@@ -99,7 +99,7 @@ const CreateCourse = () => {
 
       if (isEditMode) {
         // Update existing course
-        await axios.put(`http://localhost:5000/api/courses/${existingCourse._id}`, formData, {
+        await axios.put(`learningm-production.up.railway.app/api/courses/${existingCourse._id}`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -108,7 +108,7 @@ const CreateCourse = () => {
         setSuccess('Course updated successfully!');
       } else {
         // Create new course
-        await axios.post('http://localhost:5000/api/courses', formData, {
+        await axios.post('learningm-production.up.railway.app/api/courses', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
             Authorization: `Bearer ${localStorage.getItem('token')}`,

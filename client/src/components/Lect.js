@@ -74,7 +74,7 @@ console.log(lectures);
   // Delete a lecture
   // const handleDeleteLecture = async (id) => {
   //   try {
-  //     await axios.delete(`http://localhost:5000/lecture/lecture/${id}`, {
+  //     await axios.delete(`learningm-production.up.railway.app/lecture/lecture/${id}`, {
   //       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
   //     });
   //     setLectures((prevLectures) => prevLectures.filter((lecture) => lecture._id !== id));
@@ -187,7 +187,7 @@ const ProgressCard = styled(Paper)(({ theme }) => ({
           >
             {ReactPlayer.canPlay(lecture.video) ? (
               <ReactPlayer
-                url={`http://localhost:5000/${lecture.video.replace(/\\/g, '/')}`}
+                url={`learningm-production.up.railway.app/${lecture.video.replace(/\\/g, '/')}`}
                 controls
                 width="100%"
                 height="200px"

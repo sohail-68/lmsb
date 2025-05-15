@@ -34,7 +34,7 @@ const Profile = () => {
   // Fetch user profile
   async function fetchProfile() {
     try {
-      const response = await fetch('http://localhost:5000/api/auth/profile', {
+      const response = await fetch('learningm-production.up.railway.app/api/auth/profile', {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -72,7 +72,7 @@ const Profile = () => {
     setChangeSuccess(null);
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/change-password', {
+      const response = await fetch('learningm-production.up.railway.app/api/auth/change-password', {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -221,7 +221,7 @@ const Profile = () => {
                       <CardMedia
                         component="img"
                         alt={course.title}
-                        image={`http://localhost:5000/${course.courseThumbnail}`}
+                        image={`learningm-production.up.railway.app/${course.courseThumbnail}`}
                         sx={{
                           objectFit: 'cover',
                           width: 100,

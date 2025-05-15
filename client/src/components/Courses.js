@@ -224,7 +224,7 @@ console.log(courses);
         return;
       }
 
-      const response = await axios.get(`http://localhost:5000/api/auth/s`, {
+      const response = await axios.get(`learningm-production.up.railway.app/api/auth/s`, {
         params: { searchTerm },
         headers: {
           Authorization: `Bearer ${token}` // Include the token if it exists
@@ -316,7 +316,7 @@ console.log(location);
                      component="img"
                      alt={course.title}
                      height="250"
-                     image={`http://localhost:5000/${course.courseThumbnail}`}
+                     image={`learningm-production.up.railway.app/${course.courseThumbnail}`}
                      sx={{ objectFit: "cover" }}
                    />
                    <CardContent sx={{ padding: "16px", bgcolor: "#fff" }}>

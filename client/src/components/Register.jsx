@@ -12,7 +12,7 @@
 //   const handleRegister = async (e) => {
 //     e.preventDefault();
 //     try {
-//       await axios.post('http://localhost:5000/api/register', { username, email, password });
+//       await axios.post('learningm-production.up.railway.app/api/register', { username, email, password });
 //       navigate('/login');
 //     } catch (error) {
 //       console.error(error.response.data);

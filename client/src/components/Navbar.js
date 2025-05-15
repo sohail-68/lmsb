@@ -46,7 +46,7 @@ const navigate=useNavigate();
   const logoutUser = async () => {
     try {
       // Inform the server (optional, but useful for logging purposes)
-      const response = await fetch('http://localhost:5000/api/auth/logout', {
+      const response = await fetch('learningm-production.up.railway.app/api/auth/logout', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem("token")}`, // Pass the token in the Authorization header

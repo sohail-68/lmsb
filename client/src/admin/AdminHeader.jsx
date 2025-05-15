@@ -10,7 +10,7 @@ const AdminHeader = ({ handleSidebarToggle }) => {
   // Fetch user profile
   async function fetchProfile() {
     try {
-      const response = await fetch('http://localhost:5000/api/auth/admin', {
+      const response = await fetch('learningm-production.up.railway.app/api/auth/admin', {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`, // Replace with actual token

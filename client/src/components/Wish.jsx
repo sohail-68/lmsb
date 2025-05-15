@@ -9,7 +9,7 @@ const navigate=useNavigate()
   useEffect(() => {
     async function GETfe() {
       try {
-        const response = await axios.get("http://localhost:5000/api/auth/getwish", {
+        const response = await axios.get("learningm-production.up.railway.app/api/auth/getwish", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -58,7 +58,7 @@ console.log(courses);
               <CardMedia
                 component="img"
                 height="200"
-                image={`http://localhost:5000/${course.courseThumbnail}`}
+                image={`learningm-production.up.railway.app/${course.courseThumbnail}`}
                 alt={course.title}
                 sx={{
                   borderRadius: '8px',

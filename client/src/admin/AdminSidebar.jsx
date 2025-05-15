@@ -27,7 +27,7 @@ const AdminSidebar = ({ isOpen }) => {
   const logOutUser = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/logo",
+        "learningm-production.up.railway.app/api/auth/logo",
         {}, // Pass an empty object for the body if no data is needed
         {
           headers: {
