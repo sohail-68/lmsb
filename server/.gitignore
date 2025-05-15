@@ -1,4 +1,5 @@
 node_modules
-uplaods
+uplaods/videos
+uplaods/courses
 .env
 server.zip
