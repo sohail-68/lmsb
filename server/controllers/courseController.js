@@ -40,6 +40,7 @@ exports.createCourse = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ message: 'Course thumbnail is required' });
     }
+console.log("file",req.file);
 
     // Normalize file path for the course thumbnail
     const normalizedThumbnailPath = req.file.path.replace(/\\/g, '/');

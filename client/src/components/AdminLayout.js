@@ -10,7 +10,10 @@ const AdminLayout = () => {
 
 
   const handleSidebarToggle = () => {
-    setIsOpen(!isOpen); // Toggle the sidebar visibility
+    setTimeout(() => {
+      
+      setIsOpen(!isOpen); // Toggle the sidebar visibility
+    }, 100);
   };
 
   return (
@@ -25,6 +28,8 @@ const AdminLayout = () => {
       <Box sx={{ display: 'flex',marginTop:"4rem"}}>
         {/* Sidebar for larger screens */}
         <AdminSidebar 
+      handleSidebarToggle={handleSidebarToggle}
+
 isOpen={isOpen}
         
         />

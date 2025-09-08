@@ -14,7 +14,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setSearchTerm, fetchCourses } from '../store/features/searchSlice';
 import { toast } from 'react-toastify';
 const Navbar = () => {
-  const dispatch = useDispatch();
+    const dispatch = useDispatch();
   const { searchTerm, loading,courses } = useSelector((state) => state.search);
 console.log(courses);
 const navigate=useNavigate();
@@ -46,7 +46,7 @@ const navigate=useNavigate();
   const logoutUser = async () => {
     try {
       // Inform the server (optional, but useful for logging purposes)
-      const response = await fetch('learningm-production.up.railway.app/api/auth/logout', {
+      const response = await fetch('http://localhost:5000/api/auth/logout', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem("token")}`, // Pass the token in the Authorization header
@@ -72,316 +72,189 @@ const navigate=useNavigate();
   };
   
   return (
-<AppBar
-  position="sticky"
-  sx={{
-    backgroundColor: '#FFFFFF', // Solid blue background
-    padding: '1rem 1rem',
-    boxShadow: '10 4px 10px rgba(0, 0, 0, 0.3)',
-  }}
->
-
-  <Toolbar>
-    {/* Logo/Brand */}
-    <Typography
-      variant="h6"
-      component={Link}
-      to="/user"
+ <AppBar
+      position="sticky"
+      elevation={2}
       sx={{
-        flexGrow: 1,
-        fontWeight: 'bold',
-        textDecoration: 'none',
-        color: '#1e3a8a', // White text
-        fontFamily: 'Roboto, sans-serif',
+        backgroundColor: "#ffffff",
+        padding: "0.5rem 1rem",
+        boxShadow: "0px 4px 12px rgba(0,0,0,0.1)",
       }}
     >
-      <img src={Path} alt="" loading="lazy"   style={{width:"6rem", background:"none", objectFit:"cover", borderRadius:"3rem"}}/>
-    </Typography>
-
-    {/* Hamburger Menu for Mobile */}
-    <IconButton
-      edge="end"
-      color="1e3a8a"
-      aria-label="menu"
-      onClick={toggleDrawer(true)}
-      sx={{ display: { xs: 'block', lg: 'none' } }}
-    >
-      <MenuIcon sx={{ color: '#1e3a8a' }} /> {/* White icon */}
-    </IconButton>
-
-    <Box
-      sx={{
-        display: { xs: 'none', xl: 'flex' },
-        gap: 3,
-        alignItems: 'center',
-      }}
-    >
-      <TextField
-        variant="outlined"
-        placeholder="Search courses"
-        value={searchTerm}
-        onChange={(e) => dispatch(setSearchTerm(e.target.value))}
-      />
-      <Button
-        variant="contained"
-        startIcon={<SearchIcon />}
-        onClick={handleSearch}
-        sx={{
-          backgroundColor: '#1e3a8a',
-        }}
-        disabled={loading}
-      >
-        {loading ? 'Searching...' : 'Search'}
-      </Button>
-      <Button
-        component={Link}
-        to="/user/course"
-        sx={{
-          textTransform: 'none',
-          fontSize:'1rem',
-          color: '#1e3a8a',
-          
-          
-           // White text
-          fontWeight: 'bold',
-          '&:hover': { color: '#1e3a8a' }, // Light blue on hover
-        }}
-        startIcon={<SchoolIcon sx={{ color: '#ffffff' }} />}
-      >
-        Courses
-      </Button>
-      <Button
-        component={Link}
-        to="/login"
-        sx={{
-          textTransform: 'none',
-          fontSize:'1rem',
-          color: '#1e3a8a',
-          
-          
-           // White text
-          fontWeight: 'bold',
-          '&:hover': { color: '#1e3a8a' }, // Light blue on hover
-        }}
-        startIcon={<SchoolIcon sx={{ color: '#ffffff' }} />}
-      >
-        Login
-      </Button>
-      <Button
-        component={Link}
-        to="/user/wish"
-        sx={{
-          textTransform: 'none',
-          fontSize:'1rem',
-          color: '#1e3a8a',
-          
-          
-           // White text
-          fontWeight: 'bold',
-          '&:hover': { color: '#1e3a8a' }, // Light blue on hover
-        }}
-        startIcon={<SchoolIcon sx={{ color: '#ffffff' }} />}
-      >
-        Wishlist
-      </Button> 
-      {/* <Button
-        onClick={handleMenuOpen}
-        sx={{
-          textTransform: 'none',
-          fontSize:'1rem',
-
-          color: '#1e3a8a',
-          fontWeight: 'bold',
-          '&:hover': { color: '#1e3a8a' },
-        }}
-        startIcon={<HomeIcon sx={{ color: '#ffffff' }} />}
-      >
-        Lectures
-      </Button> */}
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-        sx={{ mt: 2 }}
-      >
-        <MenuItem
+      <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+        {/* Logo */}
+        <Typography
+          variant="h6"
           component={Link}
-          to="/lectures/1"
-          onClick={handleMenuClose}
-          sx={{ fontWeight: 'bold' }}
+          to="/user"
+          sx={{
+            textDecoration: "none",
+            color: "#1e3a8a",
+            fontWeight: "bold",
+            display: "flex",
+            alignItems: "center",
+          }}
         >
-          Lecture 1
-        </MenuItem>
-        <MenuItem
-          component={Link}
-          to="/lectures/2"
-          onClick={handleMenuClose}
-          sx={{ fontWeight: 'bold' }}
+          <img
+            src={Path}
+            alt="logo"
+            loading="lazy"
+            style={{
+              width: "6rem",
+              objectFit: "contain",
+              borderRadius: "50%",
+            }}
+          />
+        </Typography>
+
+        {/* Desktop Menu */}
+        <Box
+          sx={{
+            display: { xs: "none", lg: "flex" },
+            gap: 2,
+            alignItems: "center",
+          }}
         >
-          Lecture 2
-        </MenuItem>
-        <MenuItem
-          component={Link}
-          to="/lectures/3"
-          onClick={handleMenuClose}
-          sx={{ fontWeight: 'bold' }}
-        >
-          Lecture 3
-        </MenuItem>
-      </Menu>
-      <Button
-        component={Link}
-        to="/user/profile"
-        sx={{
-          textTransform: 'none',
-          color: '#1e3a8a',
-          fontSize:'1rem',
+          <TextField
+            size="small"
+            variant="outlined"
+            placeholder="Search courses..."
+            value={searchTerm}
+          onChange={(e) => dispatch(setSearchTerm(e.target.value))} 
+          />
+          <Button
+            variant="contained"
+            startIcon={<SearchIcon />}
+            onClick={handleSearch}
+            disabled={loading}
+            sx={{
+              backgroundColor: "#1e3a8a",
+              textTransform: "none",
+              fontWeight: "bold",
+              "&:hover": { backgroundColor: "#162c65" },
+            }}
+          >
+            {loading ? "Searching..." : "Search"}
+          </Button>
 
-          fontWeight: 'bold',
-          '&:hover': { color: '#add8e6' },
-        }}
-        startIcon={<AccountCircleIcon sx={{ color: '#ffffff' }} />}
-      >
-        Profile
-      </Button>
-      <Button
-        component={Link}
-        // to="/logout"
-        sx={{
-          fontSize:'1rem',
+          {[
+            { label: "Courses", to: "/user/course", icon: <SchoolIcon /> },
+            { label: "Login", to: "/login", icon: <SchoolIcon /> },
+            { label: "Wishlist", to: "/user/wish", icon: <SchoolIcon /> },
+            { label: "Profile", to: "/user/profile", icon: <AccountCircleIcon /> },
+          ].map((item, idx) => (
+            <Button
+              key={idx}
+              component={Link}
+              to={item.to}
+              startIcon={item.icon}
+              sx={{
+                textTransform: "none",
+                color: "#1e3a8a",
+                fontWeight: "bold",
+                fontSize: "0.95rem",
+                "& svg": { color: "#1e3a8a" },
+                "&:hover": { color: "#162c65" },
+              }}
+            >
+              {item.label}
+            </Button>
+          ))}
 
-          textTransform: 'none',
-          color: '#1e3a8a',
-          fontWeight: 'bold',
-          '&:hover': { color: '#add8e6' },
-        }}
-        startIcon={<LogoutIcon sx={{ color: '#ffffff' }} />}
-        onClick={logoutUser}
-      >
-        Logout
-      </Button>
-    </Box>
+          <Button
+            onClick={logoutUser}
+            startIcon={<LogoutIcon />}
+            sx={{
+              textTransform: "none",
+              color: "#d32f2f",
+              fontWeight: "bold",
+              "& svg": { color: "#d32f2f" },
+              "&:hover": { color: "#b71c1c" },
+            }}
+          >
+            Logout
+          </Button>
+        </Box>
 
-    {/* Drawer for Mobile */}
-    <Drawer
-      anchor="right"
-      open={drawerOpen}
-      onClose={toggleDrawer(false)}
-      sx={{
-        '& .MuiDrawer-paper': {
-          width: 250,
-          backgroundColor: '#007bff', // Match the header color
-          color: '#ffffff',
-          padding: 2,
-        },
-      }}
-    >
-      <Box sx={{ textAlign: 'center' }}>
+        {/* Mobile Hamburger */}
         <IconButton
-          onClick={toggleDrawer(false)}
-          sx={{ color: '#ffffff', alignSelf: 'flex-end' }}
+          edge="end"
+          onClick={toggleDrawer(true)}
+          sx={{ display: { xs: "block", lg: "none" }, color: "#1e3a8a" }}
         >
-          <CloseIcon />
+          <MenuIcon />
         </IconButton>
-      </Box>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 2,
-          textAlign: 'center',
-        }}
-      >
-        <Button
-          component={Link}
-          to="/courses"
+
+        {/* Drawer */}
+        <Drawer
+          anchor="right"
+          open={drawerOpen}
+          onClose={toggleDrawer(false)}
           sx={{
-            textTransform: 'none',
-            color: '#ffffff',
-            fontWeight: 'bold',
-            '&:hover': { color: '#add8e6' },
+            "& .MuiDrawer-paper": {
+              width: 260,
+              backgroundColor: "#1e3a8a",
+              color: "#ffffff",
+              padding: 2,
+            },
           }}
-          startIcon={<SchoolIcon sx={{ color: '#ffffff' }} />}
-          onClick={toggleDrawer(false)}
         >
-          Courses
-        </Button>
-        <Button
-          component="div"
-          onClick={handleMenuOpen}
-          sx={{
-            textTransform: 'none',
-            color: '#ffffff',
-            fontWeight: 'bold',
-            '&:hover': { color: '#add8e6' },
-          }}
-          startIcon={<HomeIcon sx={{ color: '#ffffff' }} />}
-        >
-          Lectures
-        </Button>
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-          sx={{ mt: 2 }}
-        >
-          <MenuItem
-            component={Link}
-            to="/lectures/1"
-            onClick={handleMenuClose}
-            sx={{ fontWeight: 'bold' }}
+          <Box sx={{ textAlign: "right" }}>
+            <IconButton onClick={toggleDrawer(false)} sx={{ color: "#fff" }}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+              textAlign: "left",
+              mt: 2,
+            }}
           >
-            Lecture 1
-          </MenuItem>
-          <MenuItem
-            component={Link}
-            to="/lectures/2"
-            onClick={handleMenuClose}
-            sx={{ fontWeight: 'bold' }}
-          >
-            Lecture 2
-          </MenuItem>
-          <MenuItem
-            component={Link}
-            to="/lectures/3"
-            onClick={handleMenuClose}
-            sx={{ fontWeight: 'bold' }}
-          >
-            Lecture 3
-          </MenuItem>
-        </Menu>
-        <Button
-          component={Link}
-          to="/profile"
-          sx={{
-            textTransform: 'none',
-            color: '#ffffff',
-            fontWeight: 'bold',
-            '&:hover': { color: '#add8e6' },
-          }}
-          startIcon={<AccountCircleIcon sx={{ color: '#ffffff' }} />}
-          onClick={toggleDrawer(false)}
-        >
-          Profile
-        </Button>
-        <Button
-          component={Link}
-          to="/logout"
-          sx={{
-            textTransform: 'none',
-            color: '#ffffff',
-            fontWeight: 'bold',
-            '&:hover': { color: '#add8e6' },
-          }}
-          startIcon={<LogoutIcon sx={{ color: '#ffffff' }} />}
-          onClick={toggleDrawer(false)}
-        >
-          Logout
-        </Button>
-      </Box>
-    </Drawer>
-  </Toolbar>
-</AppBar>
+            {[
+              { label: "Courses", to: "/user/course", icon: <SchoolIcon /> },
+              { label: "Lectures", to: "/lectures/1", icon: <HomeIcon /> },
+              { label: "Profile", to: "/user/profile", icon: <AccountCircleIcon /> },
+              { label: "Wishlist", to: "/user/wish", icon: <SchoolIcon /> },
+            ].map((item, idx) => (
+              <Button
+                key={idx}
+                component={Link}
+                to={item.to}
+                startIcon={item.icon}
+                sx={{
+                  textTransform: "none",
+                  color: "#ffffff",
+                  fontWeight: "bold",
+                  justifyContent: "flex-start",
+                  "&:hover": { color: "#add8e6" },
+                }}
+                onClick={toggleDrawer(false)}
+              >
+                {item.label}
+              </Button>
+            ))}
+
+            <Button
+              onClick={logoutUser}
+              startIcon={<LogoutIcon />}
+              sx={{
+                textTransform: "none",
+                color: "#ffbaba",
+                fontWeight: "bold",
+                justifyContent: "flex-start",
+                "& svg": { color: "#ffbaba" },
+                "&:hover": { color: "#ff8080" },
+              }}
+            >
+              Logout
+            </Button>
+          </Box>
+        </Drawer>
+      </Toolbar>
+    </AppBar>
 
   );
 };

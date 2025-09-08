@@ -67,7 +67,7 @@ console.log(courses);
               <CardMedia
                 component="img"
                 height="180"
-                image={`learningm-production.up.railway.app/${course.courseThumbnail.replace(/\\/g, '/')}`}
+                image={`http://localhost:5000/${course.courseThumbnail.replace(/\\/g, '/')}`}
                 alt={`${course.title} Thumbnail`}
                 sx={{
                   borderBottom: '4px solid #1976d2',

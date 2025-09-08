@@ -74,7 +74,7 @@ console.log(lectures);
   // Delete a lecture
   // const handleDeleteLecture = async (id) => {
   //   try {
-  //     await axios.delete(`learningm-production.up.railway.app/lecture/lecture/${id}`, {
+  //     await axios.delete(`http://localhost:5000/lecture/lecture/${id}`, {
   //       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
   //     });
   //     setLectures((prevLectures) => prevLectures.filter((lecture) => lecture._id !== id));
@@ -140,269 +140,223 @@ const ProgressCard = styled(Paper)(({ theme }) => ({
     );
 
   return (
-    <Box
+  <Box
+  sx={{
+    py: 6,
+    px: { xs: 2, sm: 4 },
+    minHeight: "100vh",
+    background: "linear-gradient(135deg, #eef2ff, #e0f7fa)", // soft pastel
+  }}
+>
+  {/* Course Title */}
+  <Typography
+    variant="h3"
+    component="h1"
+    gutterBottom
     sx={{
-      py: 6,
-      px: { xs: 2, sm: 4 },
-      bgcolor: 'linear-gradient(135deg, #e3f2fd, #bbdefb)',
-      minHeight: '100vh',
-      perspective: '1000px',
+      textAlign: "center",
+      fontWeight: "bold",
+      color: "#1e3a8a",
+      fontSize: { xs: "2rem", sm: "2.8rem" },
+      mb: 6,
+      textShadow: "2px 2px 6px rgba(0, 0, 0, 0.15)",
     }}
   >
-    {/* Course Title */}
-    <Typography
-      variant="h4"
-      component="h1"
-      gutterBottom
-      sx={{
-        textAlign: 'center',
-        fontWeight: 'bold',
-        color: '#3f51b5',
-        fontSize: { xs: '1.8rem', sm: '2.5rem' },
-        mb: 4,
-        textShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)',
-      }}
-    >
-      Lectures for Course
-    </Typography>
-  
-    {/* Lectures Grid */}
-    <Grid container spacing={4}>
-      {lectures.map((lecture) => (
-        <Grid item xs={12} sm={6} md={4} key={lecture._id}>
-          <Card
-            sx={{
-              height: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              boxShadow: 4,
-              borderRadius: '16px',
-              transformStyle: 'preserve-3d',
-              transition: 'transform 0.5s ease, box-shadow 0.5s ease',
-              '&:hover': {
-                boxShadow: 12,
-                transform: 'rotateY(10deg) translateZ(20px)',
-              },
-            }}
-          >
-            {ReactPlayer.canPlay(lecture.video) ? (
-              <ReactPlayer
-                url={`learningm-production.up.railway.app/${lecture.video.replace(/\\/g, '/')}`}
-                controls
-                width="100%"
-                height="200px"
-              />
-            ) : (
-              <Box
-                sx={{
-                  height: '200px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: '#e0e0e0',
-                  borderRadius: '8px',
-                }}
-              >
-                <Typography variant="body2" color="textSecondary">
-                  Video not available
-                </Typography>
-              </Box>
-            )}
-            <CardContent
+    🎥 Lectures for Course
+  </Typography>
+
+  {/* Lectures Grid */}
+  <Grid container spacing={4}>
+    {lectures.map((lecture) => (
+      <Grid item xs={12} sm={6} md={4} key={lecture._id}>
+        <Card
+          sx={{
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            borderRadius: "20px",
+            overflow: "hidden",
+            background: "rgba(255,255,255,0.85)",
+            backdropFilter: "blur(12px)",
+            boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+            transition: "transform 0.4s ease, box-shadow 0.4s ease",
+            "&:hover": {
+              transform: "translateY(-8px) scale(1.03)",
+              boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
+            },
+          }}
+        >
+          {ReactPlayer.canPlay(lecture.video) ? (
+            <ReactPlayer
+              url={`http://localhost:5000/${lecture.video.replace(/\\/g, "/")}`}
+              controls
+              width="100%"
+              height="200px"
+            />
+          ) : (
+            <Box
               sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                height: '100%',
+                height: "200px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                bgcolor: "#f5f5f5",
               }}
             >
-              <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
-                {lecture.title}
+              <Typography variant="body2" color="textSecondary">
+                🎬 Video not available
               </Typography>
-              <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-                {lecture.description}
-              </Typography>
-              <Chip
-                label={`Created By: ${lecture.createdBy?.name || 'Unknown'}`}
+            </Box>
+          )}
+          <CardContent
+            sx={{
+              flexGrow: 1,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+            }}
+          >
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: "bold", color: "#1e3a8a", mb: 1 }}
+            >
+              {lecture.title}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              {lecture.description}
+            </Typography>
+            <Chip
+              label={`👨‍🏫 By: ${lecture.createdBy?.name || "Unknown"}`}
+              color="primary"
+              variant="outlined"
+              sx={{ fontWeight: "bold", mb: 2 }}
+            />
+            {progress.completedLectures.some((pro) => pro._id === lecture._id) ? (
+              <Button variant="contained" color="success" fullWidth disabled>
+                ✅ Completed
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
                 color="primary"
-                sx={{ mb: 2 }}
-              />
-              <Box sx={{ display: 'flex', gap: 2 }}>
-                {progress.completedLectures.some((pro) => pro._id === lecture._id) ? (
-                  <Button variant="contained" color="success" fullWidth disabled>
-                    Completed
-                  </Button>
-                ) : (
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                    onClick={() => markLectureComplete(lecture._id)}
-                  >
-                    Mark as Complete
-                  </Button>
-                )}
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-      ))}
-    </Grid>
-  
-    {/* Course Progress */}
-    <Box sx={{ mt: 4, textAlign: 'center' }}>
-      <Typography
-        variant="h4"
+                fullWidth
+                onClick={() => markLectureComplete(lecture._id)}
+              >
+                📌 Mark as Complete
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      </Grid>
+    ))}
+  </Grid>
+
+  {/* Course Progress */}
+  <Box sx={{ mt: 8, textAlign: "center" }}>
+    <Typography
+      variant="h4"
+      sx={{
+        fontWeight: "bold",
+        color: "#1e3a8a",
+        mb: 4,
+        textShadow: "1px 1px 4px rgba(0,0,0,0.2)",
+      }}
+    >
+      📊 Course Progress
+    </Typography>
+
+    {/* Linear Progress */}
+    <Box
+      sx={{
+        mb: 6,
+        maxWidth: "600px",
+        mx: "auto",
+        p: 2,
+        borderRadius: "16px",
+        background: "rgba(255,255,255,0.7)",
+        boxShadow: "0 6px 20px rgba(0,0,0,0.1)",
+      }}
+    >
+      <LinearProgress
+        variant="determinate"
+        value={isNaN(progress.progressPercentage) ? 0 : parseFloat(progress.progressPercentage)}
         sx={{
-          fontWeight: 'bold',
-          color: '#3f51b5',
-          mb: 3,
-          textShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)',
+          height: 12,
+          borderRadius: 6,
+          "& .MuiLinearProgress-bar": {
+            background: "linear-gradient(90deg,#1e3a8a,#3f51b5)",
+          },
         }}
-      >
-        Course Progress
+      />
+      <Typography variant="body1" sx={{ fontWeight: "bold", mt: 1 }}>
+        {isNaN(progress.progressPercentage)
+          ? 0
+          : Math.round(parseFloat(progress.progressPercentage))}
+        % Completed
       </Typography>
-      {/* Linear Progress Bar */}
-      <Box
-        sx={{
-          mb: 4,
-          boxShadow: 3,
-          p: 2,
-          borderRadius: 3,
-          bgcolor: 'rgba(255, 255, 255, 0.7)',
-        }}
-      >
-        <LinearProgress
-          variant="determinate"
-          value={isNaN(progress.progressPercentage) ? 0 : parseFloat(progress.progressPercentage)}
-          sx={{
-            width: '100%',
-            height: 10,
-            borderRadius: 5,
-            backgroundColor: '#e0e0e0',
-            '& .MuiLinearProgress-bar': { backgroundColor: '#3f51b5' },
-          }}
-        />
-        <Typography variant="body1" sx={{ fontWeight: 'bold', mt: 1 }}>
-          {isNaN(progress.progressPercentage)
-            ? 0
-            : Math.round(parseFloat(progress.progressPercentage))}% Complete
-        </Typography>
-      </Box>
-      <Grid container spacing={3} justifyContent="center">
-  {/* Completed Lectures */}
-  <Grid item xs={12} sm={4}>
-  <ProgressCard
-    sx={{
-      background: 'linear-gradient(135deg, #ede7f6, #d1c4e9)', // Soft Purple
-      boxShadow: '0 5px 15px rgba(103, 58, 183, 0.2)',
-      p: 3,
-      borderRadius: '16px',
-      textAlign: 'center',
-      transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
-      '&:hover': {
-        transform: 'scale(1.05)',
-        boxShadow: '0 10px 20px rgba(103, 58, 183, 0.3)',
-      },
-    }}
-  >
-    <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#673AB7' }}>
-      ✅ Completed Lectures
-    </Typography>
-    <Typography variant="h3" sx={{ fontWeight: 'bold', color: '#673AB7' }}>
-      {progress.completedCount} 🎓
-    </Typography>
-  </ProgressCard>
-</Grid>
-
-{/* Total Lectures */}
-<Grid item xs={12} sm={4}>
-  <ProgressCard
-    sx={{
-      background: 'linear-gradient(135deg, #ffecb3, #ffd54f)', // Golden Yellow
-      boxShadow: '0 5px 15px rgba(255, 193, 7, 0.2)',
-      p: 3,
-      borderRadius: '16px',
-      textAlign: 'center',
-      transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
-      '&:hover': {
-        transform: 'scale(1.05)',
-        boxShadow: '0 10px 20px rgba(255, 193, 7, 0.3)',
-      },
-    }}
-  >
-    <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#FFC107' }}>
-      📚 Total Lectures
-    </Typography>
-    <Typography variant="h3" sx={{ fontWeight: 'bold', color: '#FFC107' }}>
-      {progress.totalLectures} 📖
-    </Typography>
-  </ProgressCard>
-</Grid>
-
-{/* Progress Percentage */}
-<Grid item xs={12} sm={4}>
-  <ProgressCard
-    sx={{
-      background: 'linear-gradient(135deg, #e0f7fa, #80deea)', // Teal Blue
-      boxShadow: '0 10px 30px rgba(0, 188, 212, 0.2)',
-      borderRadius: '16px',
-      p: 3,
-      textAlign: 'center',
-      transition: 'transform 0.4s ease-in-out, box-shadow 0.4s ease-in-out',
-      '&:hover': {
-        transform: 'scale(1.05) translateY(-5px)',
-        boxShadow: '0 15px 40px rgba(0, 188, 212, 0.3)',
-      },
-    }}
-  >
-    <Typography
-      variant="h5"
-      sx={{
-        fontWeight: 'bold',
-        color: '#00ACC1',
-        textShadow: '2px 2px 5px rgba(0, 188, 212, 0.1)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 1,
-      }}
-    >
-      🚀 Progress
-    </Typography>
-    <Typography
-      variant="h3"
-      sx={{
-        fontWeight: 'bold',
-        background: 'linear-gradient(90deg, #00ACC1, #0097A7)',
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-        textShadow: '3px 3px 10px rgba(0, 0, 0, 0.1)',
-        mt: 1,
-      }}
-    >
-      {progress.progressPercentage}% 🎯
-    </Typography>
-  </ProgressCard>
-</Grid>
-
-
-
-</Grid>
-
     </Box>
-  
-    {/* Snackbar for Alerts */}
-    <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
-      <Alert
-        onClose={handleCloseSnackbar}
-        severity={snackbarSeverity}
-        sx={{ width: '100%' }}
-      >
-        {snackbarMessage}
-      </Alert>
-    </Snackbar>
+
+    {/* Stats Cards */}
+    <Grid container spacing={4} justifyContent="center">
+      <Grid item xs={12} sm={4}>
+        <ProgressCard
+          sx={{
+            background: "linear-gradient(135deg,#ede7f6,#d1c4e9)",
+            boxShadow: "0 8px 25px rgba(103,58,183,0.2)",
+          }}
+        >
+          <Typography variant="h6" sx={{ fontWeight: "bold", color: "#673AB7" }}>
+            ✅ Completed Lectures
+          </Typography>
+          <Typography variant="h3" sx={{ fontWeight: "bold", color: "#673AB7" }}>
+            {progress.completedCount}
+          </Typography>
+        </ProgressCard>
+      </Grid>
+
+      <Grid item xs={12} sm={4}>
+        <ProgressCard
+          sx={{
+            background: "linear-gradient(135deg,#fff8e1,#ffe082)",
+            boxShadow: "0 8px 25px rgba(255,193,7,0.2)",
+          }}
+        >
+          <Typography variant="h6" sx={{ fontWeight: "bold", color: "#ff8f00" }}>
+            📚 Total Lectures
+          </Typography>
+          <Typography variant="h3" sx={{ fontWeight: "bold", color: "#ff8f00" }}>
+            {progress.totalLectures}
+          </Typography>
+        </ProgressCard>
+      </Grid>
+
+      <Grid item xs={12} sm={4}>
+        <ProgressCard
+          sx={{
+            background: "linear-gradient(135deg,#e0f7fa,#80deea)",
+            boxShadow: "0 8px 25px rgba(0,188,212,0.2)",
+          }}
+        >
+          <Typography variant="h6" sx={{ fontWeight: "bold", color: "#0097a7" }}>
+            🚀 Progress
+          </Typography>
+          <Typography
+            variant="h3"
+            sx={{
+              fontWeight: "bold",
+              background: "linear-gradient(90deg,#0097a7,#00bcd4)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            {progress.progressPercentage}%
+          </Typography>
+        </ProgressCard>
+      </Grid>
+    </Grid>
   </Box>
+</Box>
+
   
 
   );

@@ -30,6 +30,8 @@ const CreateQuiz = lazy(() => import("./components/CreateQuiz.js"));
 const PlayQuizz = lazy(() => import("./components/Play.js"));
 const QuizeGame = lazy(() => import("./components/QuizeGame.js"));
 const QuizePage = lazy(() => import("./components/QuizePage.js"));
+const Cdetail = lazy(() => import("./components/Cdetail.js"));
+
 function App() {
   return (
     <Router>
@@ -86,6 +88,10 @@ function App() {
             <Route
               path="detail/:id"
               element={<ProtectedRoute element={<Details />} allowedRoles={["admin"]} />}
+            />
+             <Route
+              path="cdetail/:id"
+              element={<ProtectedRoute element={<Cdetail />} allowedRoles={["admin"]} />}
             />
             <Route
               path="lectures/:id"

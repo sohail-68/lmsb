@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'learningm-production.up.railway.app/api/quizzes';
+const API_URL = 'http://localhost:5000/api/quizzes';
 
 // ✅ Function to get token from local storage
 const getAuthToken = () => {

@@ -14,27 +14,31 @@ const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     let folder = 'uploads/';
 
-    // Determine folder based on file type or request type
     if (req.body && req.body.type) {
       if (req.body.type === 'courseThumbnail') {
         folder = 'uploads/courses/';
       } else if (req.body.type === 'profileImage') {
         folder = 'uploads/profiles/';
       } else if (req.body.type === 'lectureVideo') {
-        
         folder = 'uploads/videos/';
       }
     }
 
-    // Ensure the folder exists
     ensureDirectoryExists(folder);
 
-    // Set the folder path
+    console.log(`Uploading to folder: ${folder}`);  // 🔍 Log destination folder
+
     cb(null, folder);
   },
   filename: (req, file, cb) => {
-    // Generate a unique filename
-    cb(null, Date.now() + path.extname(file.originalname));
+    console.log("dddd,",file);
+    
+    const uniqueName = Date.now() + path.extname(file.originalname);
+
+    console.log(`Original filename: ${file.originalname}`); // 🔍 Original name
+    console.log(`Saved as: ${uniqueName}`);                 // 🔍 Final saved name
+
+    cb(null, uniqueName);
   }
 });
 
@@ -56,15 +60,13 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// Multer instance with size limits
+// ❌ FIX: fileSize inside limits must be number, not function
+// Default to max 100MB, you can dynamically limit per route if needed
 const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: {
-    fileSize: (req, file, cb) => {
-      // Allow larger file sizes for videos (100MB for videos, 5MB for images)
-      return req.body.type === 'lectureVideo' ? 100 * 1024 * 1024 : 5 * 1024 * 1024;
-    },
+    fileSize: 100 * 1024 * 1024, // Max limit (handled per type in route)
   },
 });
 

@@ -117,7 +117,7 @@ const CoursePage = () => {
           component="img"
           alt={course.title}
           height="350"
-          image={`learningm-production.up.railway.app/${course.courseThumbnail}`}
+          image={`http://localhost:5000/${course.courseThumbnail}`}
           sx={{
             objectFit: "cover",
           }}

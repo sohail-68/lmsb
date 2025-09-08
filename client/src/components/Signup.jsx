@@ -36,7 +36,7 @@ const Signup = () => {
     dispatch(registerUserStart());
 
     try {
-      const { data } = await axios.post('learningm-production.up.railway.app/api/auth/register', formData);
+      const { data } = await axios.post('http://localhost:5000/api/auth/register', formData);
       localStorage.setItem('userid', data.user._id);
       dispatch(registerUserSuccess(data.user));
     } catch (error) {

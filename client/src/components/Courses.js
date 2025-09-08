@@ -224,7 +224,7 @@ console.log(courses);
         return;
       }
 
-      const response = await axios.get(`learningm-production.up.railway.app/api/auth/s`, {
+      const response = await axios.get(`http://localhost:5000/api/auth/s`, {
         params: { searchTerm },
         headers: {
           Authorization: `Bearer ${token}` // Include the token if it exists
@@ -259,122 +259,217 @@ console.log(location);
   };
 
   return (
-    <Box sx={{
-      minHeight: "90vh",
-      bgcolor: "linear-gradient(to bottom right, #eef2ff, #c7d2fe)",
-      padding: "20px",
-    }}>
-      <Box display="flex" justifyContent="center" mb={4}>
-        <Typography
-          component={motion.h2}
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          sx={{ color: "#1e3a8a", fontSize: "2.5rem", fontWeight: "bold", letterSpacing: "0.1rem" }}
-        >
-          Our Courses 📚
-        </Typography>
-      </Box>
-      
-      <Box display="flex" justifyContent="center" alignItems="center" mb={4} gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
-        <TextField
-          placeholder="Search courses by title or description"
-          variant="outlined"
-          value={searchTerm}
-          onChange={handleSearchInputChange}
-          sx={{ width: { xs: '100%', sm: '50%' } }}
-        />
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleSearch}
-          startIcon={<SearchIcon />}
-        >
-          Search
-        </Button>
-      </Box>
-      
-      {loading && <Box display="flex" justifyContent="center" alignItems="center" height="50vh"><CircularProgress size={80} thickness={4.5} sx={{ color: "#1e3a8a" }} /></Box>}
-      {error && <Alert severity="error">{error}</Alert>}
-      
-      <Grid container spacing={4} sx={{ padding: "0 20px" }}>
-           <Grid container spacing={3} sx={{ padding: "20px" }}>
-           {courses.map((course) => (
-             <Grid item xs={12} sm={6} md={4} key={course._id}>
-               <motion.div whileHover={{ scale: 1.05 }}>
-                 <Card
-                   sx={{
-                     backdropFilter: "blur(15px)",
-                     background: "rgba(255, 255, 255, 0.2)",
-                     boxShadow: "0 10px 20px rgba(0, 0, 0, 0.15)",
-                     borderRadius: "16px",
-                     overflow: "hidden",
-                     transition: "0.3s",
-                   }}
-                 >
-                   <CardMedia
-                     component="img"
-                     alt={course.title}
-                     height="250"
-                     image={`learningm-production.up.railway.app/${course.courseThumbnail}`}
-                     sx={{ objectFit: "cover" }}
-                   />
-                   <CardContent sx={{ padding: "16px", bgcolor: "#fff" }}>
-                     <Typography variant="h6" sx={{ fontWeight: "bold", color: "#1e3a8a", marginBottom: "8px" }}>
-                       {course.title} 🎓
-                     </Typography>
-                     <Box sx={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "10px" }}>
-                       <Chip label={`📚 ${course.category}`} sx={{ bgcolor: "#1e3a8a", color: "#fff" }} />
-                       <Chip label={`🎯 ${course.courseLevel}`} sx={{ bgcolor: "#3b82f6", color: "#fff" }} />
-                       <Chip
-                         label={course.coursePrice > 0 ? `💰 ₹${course.coursePrice}` : "🆓 Free"}
-                         sx={{ bgcolor: course.coursePrice > 0 ? "#3b82f6" : "#1e3a8a", color: "#fff" }}
-                       />
-                     </Box>
-                     <Typography sx={{ fontSize: "0.9rem", color: "#6B7280" }}>📈 Enrollments: {course.analytics.enrollments}</Typography>
-                     <Typography sx={{ fontSize: "0.9rem", color: "#6B7280" }}>⭐ Rating: {course.analytics.averageRating}</Typography>
-                     <Box sx={{ marginTop: "12px" }}>
-                       <Typography variant="h6" sx={{ fontWeight: "bold", color: "#1e3a8a", marginBottom: "8px" }}>
-                         📝 Add Your Review
-                       </Typography>
-                       <Rating
-                         value={review[course._id]?.rating || 0}
-                         onChange={(event, newValue) => handleReviewChange(course._id, { target: { name: "rating", value: newValue } })}
-                         sx={{ color: "#3b82f6" }}
-                       />
-                       <TextField
-                         name="comment"
-                         value={review[course._id]?.comment || ""}
-                         onChange={(event) => handleReviewChange(course._id, event)}
-                         variant="outlined"
-                         multiline
-                         rows={3}
-                         fullWidth
-                         sx={{ marginTop: "8px", borderRadius: "8px" }}
-                         placeholder="Write a comment..."
-                       />
-                       {course.enrolledUsers.includes(localStorage.getItem("userid")) && (
-                         <Button variant="contained" sx={{ marginTop: "12px", backgroundColor: "#1e3a8a", borderRadius: "8px" }} onClick={() => handleReviewSubmit(course._id)}>
-                           Submit Review ✍️
-                         </Button>
-                       )}
-                     </Box>
-                     <Box sx={{ marginTop: "16px", display: "flex", justifyContent: "space-between" }}>
-                       <Button variant="outlined" sx={{ color: "#1e3a8a", borderColor: "#1e3a8a", borderRadius: "8px" }} onClick={() => HandDetali(course)}>
-                         <FaInfoCircle style={{ marginRight: "6px" }} /> Details
-                       </Button>
-                       <Button variant="contained" sx={{ backgroundColor: "#3b82f6", borderRadius: "8px" }} onClick={() => addToWishlist(course._id)}>
-                         <FaHeart style={{ marginRight: "6px" }} /> Wishlist
-                       </Button>
-                     </Box>
-                   </CardContent>
-                 </Card>
-               </motion.div>
-             </Grid>
-           ))}
-         </Grid>
-    </Grid>
+  <Box
+  sx={{
+    minHeight: "90vh",
+    bgcolor: "linear-gradient(135deg, #eef2ff, #e0e7ff, #c7d2fe)",
+    py: 6,
+    px: 2,
+  }}
+>
+  {/* Heading */}
+  <Box display="flex" justifyContent="center" mb={5}>
+    <Typography
+      component={motion.h2}
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      sx={{
+        color: "#1e3a8a",
+        fontSize: { xs: "2rem", sm: "2.6rem" },
+        fontWeight: "bold",
+        letterSpacing: "0.02rem",
+        textAlign: "center",
+      }}
+    >
+      Our Courses
+    </Typography>
+  </Box>
+
+  {/* Search Box */}
+  <Box
+    display="flex"
+    justifyContent="center"
+    alignItems="center"
+    mb={6}
+    gap={2}
+    sx={{
+      flexDirection: { xs: "column", sm: "row" },
+      maxWidth: "800px",
+      mx: "auto",
+    }}
+  >
+    <TextField
+      placeholder="Search courses by title or description"
+      variant="outlined"
+      value={searchTerm}
+      onChange={handleSearchInputChange}
+      sx={{
+        width: { xs: "100%", sm: "70%" },
+        bgcolor: "#fff",
+        borderRadius: "10px",
+      }}
+    />
+    <Button
+      variant="contained"
+      color="primary"
+      onClick={handleSearch}
+      sx={{
+        borderRadius: "10px",
+        px: 3,
+        py: 1.2,
+        background: "linear-gradient(135deg, #1e3a8a, #3b82f6)",
+        "&:hover": {
+          background: "linear-gradient(135deg, #1e40af, #2563eb)",
+        },
+      }}
+    >
+      Search
+    </Button>
+  </Box>
+
+  {/* Loading / Error */}
+  {loading && (
+    <Box display="flex" justifyContent="center" alignItems="center" height="50vh">
+      <CircularProgress size={80} thickness={4.5} sx={{ color: "#1e3a8a" }} />
     </Box>
+  )}
+  {error && <Alert severity="error">{error}</Alert>}
+
+  {/* Courses Grid */}
+  <Box sx={{ maxWidth: "1200px", mx: "auto" }}>
+    <Grid container spacing={4}>
+      {courses.map((course) => (
+        <Grid item xs={12} sm={6} md={4} key={course._id}>
+          <motion.div whileHover={{ scale: 1.05, y: -6 }}>
+            <Card
+              sx={{
+                backdropFilter: "blur(16px)",
+                background: "rgba(255, 255, 255, 0.95)",
+                boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+                borderRadius: "18px",
+                overflow: "hidden",
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                transition: "all 0.3s ease",
+              }}
+            >
+              {/* Thumbnail */}
+              <CardMedia
+                component="img"
+                alt={course.title}
+                height="220"
+                image={`http://localhost:5000/${course.courseThumbnail}`}
+                sx={{ objectFit: "cover" }}
+              />
+
+              {/* Content */}
+              <CardContent sx={{ flex: 1, display: "flex", flexDirection: "column", p: 3 }}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: "600",
+                    color: "#1e3a8a",
+                    mb: 1.5,
+                    lineHeight: 1.4,
+                  }}
+                >
+                  {course.title}
+                </Typography>
+
+                {/* Tags */}
+                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 2 }}>
+                  <Chip
+                    label={course.category}
+                    sx={{
+                      bgcolor: "#1e3a8a",
+                      color: "#fff",
+                      borderRadius: "8px",
+                      fontSize: "0.8rem",
+                    }}
+                  />
+                  <Chip
+                    label={course.courseLevel}
+                    sx={{
+                      bgcolor: "#3b82f6",
+                      color: "#fff",
+                      borderRadius: "8px",
+                      fontSize: "0.8rem",
+                    }}
+                  />
+                  <Chip
+                    label={course.coursePrice > 0 ? `₹${course.coursePrice}` : "Free"}
+                    sx={{
+                      bgcolor: course.coursePrice > 0 ? "#3b82f6" : "#10b981",
+                      color: "#fff",
+                      borderRadius: "8px",
+                      fontSize: "0.8rem",
+                    }}
+                  />
+                </Box>
+
+                {/* Stats */}
+                <Typography sx={{ fontSize: "0.9rem", color: "#6B7280" }}>
+                  Enrollments: {course.analytics.enrollments}
+                </Typography>
+                <Typography sx={{ fontSize: "0.9rem", color: "#6B7280", mb: 2 }}>
+                  Rating: {course.analytics.averageRating}
+                </Typography>
+
+                {/* Actions */}
+                <Box
+                  sx={{
+                    mt: "auto",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    gap: 2,
+                  }}
+                >
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      flex: 1,
+                      color: "#1e3a8a",
+                      borderColor: "#1e3a8a",
+                      borderRadius: "10px",
+                      py: 1,
+                      fontWeight: 600,
+                      "&:hover": {
+                        borderColor: "#1e40af",
+                        backgroundColor: "rgba(30,58,138,0.05)",
+                      },
+                    }}
+                    onClick={() => HandDetali(course)}
+                  >
+                    Details
+                  </Button>
+                  <Button
+                    variant="contained"
+                    sx={{
+                      flex: 1,
+                      background: "linear-gradient(135deg, #3b82f6, #2563eb)",
+                      borderRadius: "10px",
+                      py: 1,
+                      fontWeight: 600,
+                      "&:hover": {
+                        background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+                      },
+                    }}
+                    onClick={() => addToWishlist(course._id)}
+                  >
+                    Wishlist
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </Grid>
+      ))}
+    </Grid>
+  </Box>
+</Box>
+
 
      
      

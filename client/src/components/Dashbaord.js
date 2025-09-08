@@ -42,7 +42,7 @@ const CoursesList = () => {
     const fetchCourses = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('learningm-production.up.railway.app/api/courses/admin', {
+        const response = await axios.get('http://localhost:5000/api/courses/admin', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -68,7 +68,7 @@ console.log(courses);
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this course?')) {
       try {
-        await axios.delete(`learningm-production.up.railway.app/api/courses/${id}`, {
+        await axios.delete(`http://localhost:5000/api/courses/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -168,11 +168,12 @@ console.log(courses);
                   '&:hover': { boxShadow: 6, transform: 'scale(1.03)' },
                   transition: 'all 0.3s ease-in-out',
                 }}
+                // component={Button}
               >
                 <CardMedia
                   component="img"
                   height="140"
-                  image={`learningm-production.up.railway.app/${course.courseThumbnail.replace(/\\/g, '/')}`}
+                  image={`http://localhost:5000/${course.courseThumbnail.replace(/\\/g, '/')}`}
                   alt={`${course.title} Thumbnail`}
                 />
                 <CardContent>
@@ -199,30 +200,32 @@ console.log(courses);
                     <Typography variant="caption">Students Enrolled</Typography>
                   </Badge>
                 </CardContent>
-                <Box sx={{ p: 2, textAlign: 'center', mt: 'auto' }}>
-                  <Button
-                    variant="contained"
-                    color="info"
-                    onClick={() => handleViewLectures(course._id)}
-                    sx={{ mr: 1 }}
-                  >
-                    View Lectures
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="success"
-                    onClick={() => handleAddLecture(course._id)}
-                  >
-                    Add Lecture
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="success"
-                    onClick={() => handelQuize(course._id)}
-                  >
-                  quize
-                  </Button>
-                </Box>
+   <Box sx={{ p: 2 }}>
+  <Grid container spacing={2}>
+    <Grid item xs={6}>
+      <Button fullWidth variant="contained" color="info" onClick={() => handleViewLectures(course._id)}>
+        View Lectures
+      </Button>
+    </Grid>
+    <Grid item xs={6}>
+      <Button fullWidth variant="contained" color="success" onClick={() => handleAddLecture(course._id)}>
+        Add Lecture
+      </Button>
+    </Grid>
+    <Grid item xs={6}>
+      <Button fullWidth variant="contained" color="success" onClick={() => handelQuize(course._id)}>
+        Quiz
+      </Button>
+    </Grid>
+    <Grid item xs={6}>
+      <Button fullWidth variant="outlined" color="primary" onClick={() => navigate(`/admin/cdetail/${course._id}`)}>
+        View Details
+      </Button>
+    </Grid>
+  </Grid>
+</Box>
+
+
               </Card>
             </Grid>
           ))}

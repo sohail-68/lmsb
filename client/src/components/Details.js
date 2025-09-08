@@ -72,7 +72,7 @@ const LectureDetail = () => {
         {isVideo ? (
           <CardMedia
             component="video"
-            src={`learningm-production.up.railway.app/${lecture.video.replace(/\\/g, '/')}`}
+            src={`http://localhost:5000/${lecture.video.replace(/\\/g, '/')}`}
             controls
             title={lecture.title}
             style={{

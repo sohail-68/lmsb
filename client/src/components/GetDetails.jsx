@@ -17,6 +17,7 @@ import {
   ListItemText,
   Button,
   Rating,
+  TextField,
 } from '@mui/material';
 import { toast } from 'react-toastify';
 import { FaBook, FaGlobe, FaGraduationCap, FaMoneyBill, FaUsers } from 'react-icons/fa';
@@ -26,7 +27,19 @@ const GetDetails = () => {
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+const [review, setReview] = useState({
+  rating: 0,
+  comment: "",
+});
 
+
+const handleReviewChange = (event) => {
+  const { name, value } = event.target;
+  setReview((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+}; 
   const getCourseDetails = async () => {
     try {
       setLoading(true);
@@ -89,6 +102,11 @@ console.log(orderData);
                 }
               );
               alert(paymentVerificationResponse.data.message);
+               const userId = localStorage.getItem("userid");
+    setCourse((prev) => ({
+      ...prev,
+      enrolledUsers: [...prev.enrolledUsers, userId],
+    }));
               // navigate(`/user/lect/${course._id}`);
             } catch (err) {
               console.error("Payment Verification Failed:", err);
@@ -129,110 +147,187 @@ console.log(orderData);
     }
   };
 
-  return (
-<Box sx={{
-        backgroundColor: '#f0f4fa',
+  
+const handleReviewSubmit = async (courseId) => {
+  if (review.rating === 0 || review.comment === "") {
+    alert("Please provide both rating and comment.");
+    return;
+  }
 
-  minHeight: "100vh",
-  padding: "40px 20px"
-}}>
-  <Card sx={{ borderRadius: "16px", boxShadow: 6, overflow: "hidden", backgroundColor: "#ffffff" }}>
-    <Grid container spacing={4}>
+  try {
+    const response = await apiClient.post(`/courses/${courseId}/review`, review);
+    alert(response.data.message);
+
+    getCourseDetails()
+    setReview({ rating: 0, comment: "" }); // Reset
+  } catch (err) {
+    console.error(err);
+    alert("Failed to submit review.");
+  }
+};
+
+
+  return (
+<Box
+  sx={{
+    backgroundColor: "#f4f6fb",
+    minHeight: "100vh",
+    py: 6,
+    px: 2,
+  }}
+>
+  {/* Course Detail Card */}
+  <Card
+    sx={{
+      borderRadius: "18px",
+      boxShadow: "0 8px 20px rgba(0,0,0,0.1)",
+      overflow: "hidden",
+      backgroundColor: "#fff",
+      maxWidth: "1200px",
+      mx: "auto",
+    }}
+  >
+    <Grid container spacing={0}>
+      {/* Left - Thumbnail */}
       <Grid item xs={12} md={6}>
         <CardMedia
           component="img"
           alt={course.title}
-          height="400"
-          image={`learningm-production.up.railway.app/${course.courseThumbnail}`}
-          sx={{ objectFit: "cover", borderRadius: "16px 0 0 16px" }}
+          height="100%"
+          image={`http://localhost:5000/${course.courseThumbnail}`}
+          sx={{
+            objectFit: "cover",
+            height: { xs: 250, md: "100%" },
+          }}
         />
       </Grid>
+
+      {/* Right - Info */}
       <Grid item xs={12} md={6}>
-        <CardContent sx={{ padding: "24px" }}>
+        <CardContent sx={{ p: 4 }}>
           <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", color: "#1e3a8a" }}>
-            🎓 {course.title}
+            {course.title}
           </Typography>
+
           <Typography variant="body1" color="text.secondary" paragraph>
             {course.description}
           </Typography>
+
           <Typography variant="subtitle1" gutterBottom>
-            📚 <strong>Category:</strong> {course.category}
+            <strong>Category:</strong> {course.category}
           </Typography>
           <Typography variant="subtitle1" gutterBottom>
-            🎯 <strong>Level:</strong> {course.courseLevel}
+            <strong>Level:</strong> {course.courseLevel}
           </Typography>
           <Typography variant="subtitle1" gutterBottom>
-            🌍 <strong>Language:</strong> {course.language}
+            <strong>Language:</strong> {course.language}
           </Typography>
           <Typography variant="subtitle1" gutterBottom>
-            💰 <strong>Price:</strong> {course.coursePrice > 0 ? `₹${course.coursePrice}` : "🆓 Free"}
+            <strong>Price:</strong>{" "}
+            {course.coursePrice > 0 ? `₹${course.coursePrice}` : "Free"}
           </Typography>
-          <Box display="flex" alignItems="center" mb={2}>
-            <Rating value={course.analytics?.averageRating || 0} precision={0.5} readOnly size="large" sx={{ mr: 1 }} />
+
+          <Box display="flex" alignItems="center" mb={2} mt={1}>
+            <Rating
+              value={course.analytics?.averageRating || 0}
+              precision={0.5}
+              readOnly
+              size="large"
+              sx={{ mr: 1 }}
+            />
             <Typography variant="subtitle1" color="text.secondary">
-              ⭐ {course.analytics?.averageRating || "N/A"} / 5
+              {course.analytics?.averageRating || "N/A"} / 5
             </Typography>
           </Box>
+
           <Typography variant="subtitle1" gutterBottom>
-            👥 <strong>Enrollments:</strong> {course.analytics?.enrollments || 0}
+            <strong>Enrollments:</strong> {course.analytics?.enrollments || 0}
           </Typography>
-          <Box mt={2}>
+
+          <Box mt={3}>
             <Button
               variant="contained"
               size="large"
               sx={{
                 width: "100%",
-                borderRadius: "8px",
+                borderRadius: "10px",
                 fontWeight: "bold",
-                backgroundColor: "#ff9800",
-                "&:hover": { backgroundColor: "#e65100", transform: "scale(1.05)" },
+                background: "linear-gradient(135deg, #1e3a8a, #3b82f6)",
+                py: 1.5,
+                "&:hover": {
+                  background: "linear-gradient(135deg, #1e40af, #2563eb)",
+                  transform: "scale(1.03)",
+                },
               }}
               onClick={() => enrollInCourse(course)}
             >
-              🚀 Enroll Now
+              Enroll Now
             </Button>
           </Box>
         </CardContent>
       </Grid>
     </Grid>
   </Card>
-  <Box mt={4}>
+
+  {/* Bottom Section */}
+  <Box mt={6} maxWidth="1200px" mx="auto">
     <Grid container spacing={4}>
+      {/* Prerequisites */}
       <Grid item xs={12} md={6}>
-        <Paper elevation={3} sx={{ padding: "24px", borderRadius: "12px", backgroundColor: "#ffffff" }}>
+        <Paper
+          elevation={3}
+          sx={{
+            p: 4,
+            borderRadius: "14px",
+            backgroundColor: "#fff",
+            // height: "100%",
+          }}
+        >
           <Typography variant="h5" gutterBottom sx={{ color: "#1e3a8a", fontWeight: "bold" }}>
-            🔑 Prerequisites
+            Prerequisites
           </Typography>
           {course.prerequisites?.length > 0 ? (
             <List>
               {course.prerequisites.map((prerequisite, index) => (
-                <ListItem key={index}>
-                  <ListItemText primary={`✔️ ${prerequisite}`} />
+                <ListItem key={index} sx={{ px: 0 }}>
+                  <ListItemText primary={prerequisite} />
                 </ListItem>
               ))}
             </List>
           ) : (
             <Typography variant="body2" color="text.secondary">
-              ❌ No prerequisites listed.
+              No prerequisites listed.
             </Typography>
           )}
         </Paper>
       </Grid>
+
+      {/* Reviews */}
       <Grid item xs={12} md={6}>
-        <Paper elevation={3} sx={{ padding: "24px", borderRadius: "12px", backgroundColor: "#ffffff" }}>
+        <Paper
+          elevation={3}
+          sx={{
+            p: 4,
+            borderRadius: "14px",
+            backgroundColor: "#fff",
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
           <Typography variant="h5" gutterBottom sx={{ color: "#1e3a8a", fontWeight: "bold" }}>
-            📝 Reviews
+            Reviews
           </Typography>
           {course.reviews?.length > 0 ? (
-            <List>
+            <List sx={{ flex: 1 }}>
               {course.reviews.map((review, index) => (
                 <Box key={index} mb={3}>
                   <Typography variant="subtitle1" sx={{ fontWeight: "bold", color: "#1e3a8a" }}>
-                    👤 {review.user?.name || "Anonymous"}
+                    {review.user?.name || "Anonymous"}
                   </Typography>
                   <Rating value={review.rating} precision={0.5} readOnly size="small" sx={{ mb: 1 }} />
                   <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                    💬 {review.comment}
+                    {review.comment}
                   </Typography>
                   <Divider sx={{ my: 2 }} />
                 </Box>
@@ -240,9 +335,92 @@ console.log(orderData);
             </List>
           ) : (
             <Typography variant="body2" color="text.secondary">
-              ❌ No reviews yet.
+              No reviews yet.
             </Typography>
           )}
+
+          {/* Add Review */}
+        <Box
+  sx={{
+    mt: 3,
+    p: 3,
+    borderRadius: 3,
+    backgroundColor: "#ffffff",
+    boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
+  }}
+>
+  {/* Heading */}
+  <Typography
+    variant="h6"
+    sx={{ fontWeight: "bold", color: "primary.main", mb: 2 }}
+  >
+    ✍️ Add Your Review
+  </Typography>
+
+  {/* Rating */}
+  <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+    <Rating
+      value={review.rating || 0}
+      onChange={(event, newValue) =>
+        setReview((prev) => ({ ...prev, rating: newValue }))
+      }
+      size="large"
+      sx={{ color: "#fbbf24" }} // golden-yellow stars
+    />
+    <Typography sx={{ ml: 2, fontWeight: 500, color: "text.secondary" }}>
+      {review.rating ? `${review.rating} / 5` : "No rating yet"}
+    </Typography>
+  </Box>
+
+  {/* Comment Box */}
+  <TextField
+    name="comment"
+    value={review.comment || ""}
+    onChange={handleReviewChange}
+    variant="outlined"
+    multiline
+    rows={3}
+    fullWidth
+    placeholder="Write your feedback..."
+    sx={{
+      mb: 3,
+      "& .MuiOutlinedInput-root": {
+        borderRadius: "12px",
+        backgroundColor: "#f9fafb",
+      },
+    }}
+  />
+
+  {/* Submit Button */}
+  {course.enrolledUsers.includes(localStorage.getItem("userid")) ? (
+    <Button
+      variant="contained"
+      fullWidth
+      sx={{
+        background: "linear-gradient(135deg, #1e3a8a, #3b82f6)",
+        borderRadius: "12px",
+        py: 1.5,
+        fontWeight: "bold",
+        fontSize: "1rem",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+        "&:hover": {
+          background: "linear-gradient(135deg, #1e40af, #2563eb)",
+        },
+      }}
+      onClick={() => handleReviewSubmit(course._id)}
+    >
+      🚀 Submit Review
+    </Button>
+  ) : (
+    <Typography
+      variant="body2"
+      sx={{ mt: 1, fontStyle: "italic", color: "text.secondary" }}
+    >
+      You need to enroll in this course to leave a review.
+    </Typography>
+  )}
+</Box>
+
         </Paper>
       </Grid>
     </Grid>

@@ -80,7 +80,6 @@ const HomeCarousel = () => {
                 position: "relative",
                 borderRadius: "1.5rem",
                 overflow: "hidden",
-                boxShadow: "0 10px 20px rgba(0, 0, 0, 0.2)",
               }}
             >
               <CardMedia

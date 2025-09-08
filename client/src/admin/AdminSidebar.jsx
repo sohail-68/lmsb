@@ -19,7 +19,9 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-const AdminSidebar = ({ isOpen }) => {
+const AdminSidebar = ({ isOpen,handleSidebarToggle }) => {
+      
+
   const location = useLocation();
   const navigate = useNavigate();
   const isActive = (path) => location.pathname === path;
@@ -27,7 +29,7 @@ const AdminSidebar = ({ isOpen }) => {
   const logOutUser = async () => {
     try {
       const response = await axios.post(
-        "learningm-production.up.railway.app/api/auth/logo",
+        "http://localhost:5000/api/auth/logo",
         {}, // Pass an empty object for the body if no data is needed
         {
           headers: {
@@ -77,6 +79,8 @@ const AdminSidebar = ({ isOpen }) => {
       <List>
         <ListItem
           button
+        onClick={handleSidebarToggle}
+
           component={Link}
           to="/admin/dashboard"
           sx={{
@@ -91,6 +95,7 @@ const AdminSidebar = ({ isOpen }) => {
         </ListItem>
 
         <ListItem
+        onClick={handleSidebarToggle}
           button
           component={Link}
           to="/admin/create-course"
@@ -107,6 +112,8 @@ const AdminSidebar = ({ isOpen }) => {
 
         <ListItem
           button
+        onClick={handleSidebarToggle}
+
           component={Link}
           to="/admin/userdashb"
           sx={{
@@ -121,6 +128,8 @@ const AdminSidebar = ({ isOpen }) => {
         </ListItem>
 
         <ListItem
+        onClick={handleSidebarToggle}
+
           button
           component={Link}
           to="/admin/Lectureall"
@@ -136,6 +145,8 @@ const AdminSidebar = ({ isOpen }) => {
         </ListItem>
 
         <ListItem
+        onClick={handleSidebarToggle}
+
           button
           component={Link}
           to="/admin/pay"

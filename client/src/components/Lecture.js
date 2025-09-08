@@ -34,7 +34,7 @@ const CreateLecture = () => {
       setTitle(states.title || '');
       setDescription(states.description || '');
       setVideoPreview(
-        states.video ? `learningm-production.up.railway.app/${states.video.replace(/\\/g, '/')}` : null
+        states.video ? `http://localhost:5000/${states.video.replace(/\\/g, '/')}` : null
       );
     }
   }, [states]);
@@ -90,7 +90,7 @@ const CreateLecture = () => {
         formData.append('courseId', params.id);
         formData.append('type', 'lectureVideo');
 
-        await axios.post('learningm-production.up.railway.app/lecture', formData, {
+        await axios.post('http://localhost:5000/lecture', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -102,7 +102,7 @@ const CreateLecture = () => {
 
         alert('Lecture created successfully');
       } else {
-        await axios.put(`learningm-production.up.railway.app/lecture/lecture/${states._id}`, formData, {
+        await axios.put(`http://localhost:5000/lecture/lecture/${states._id}`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
             Authorization: `Bearer ${localStorage.getItem('token')}`,

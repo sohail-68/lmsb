@@ -52,7 +52,7 @@ const LecturesList = () => {
     setOpenSnackbar(true);
 
     try {
-      const deldata = await axios.delete(`learningm-production.up.railway.app/lecture/lecture/${id}`, {
+      const deldata = await axios.delete(`http://localhost:5000/lecture/lecture/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -126,7 +126,7 @@ console.log(lectures);
           const videoContent = isVideo ? (
             <CardMedia
               component="video"
-              src={`learningm-production.up.railway.app/${lecture.video.replace(/\\/g, '/')}`}
+              src={`http://localhost:5000/${lecture.video.replace(/\\/g, '/')}`}
               controls
               title={lecture.title}
               style={{

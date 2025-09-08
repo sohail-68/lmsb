@@ -63,7 +63,6 @@ exports.loginUser = async (req, res) => {
 };
 // Backend logout API (Express)
 exports.logoutUser = async(req, res) => {
-  console.log("As");
   
   try {
     // If you're storing JWT tokens in cookies, you can clear the cookie.

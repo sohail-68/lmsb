@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'learningm-production.up.railway.app/lecture';
+const BASE_URL = 'http://localhost:5000/lecture';
 
 /**
  * Fetch lectures for a specific course
@@ -41,7 +41,7 @@ export const getLectureById = async (id,token) => {
 export const Update = async (lectureId, formData, token) => {
   console.log(lectureId, formData, token);
   
-  const response = await axios.put(`learningm-production.up.railway.app/lecture/${lectureId}`, formData, {
+  const response = await axios.put(`http://localhost:5000/lecture/${lectureId}`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
       Authorization: `Bearer ${token}`,

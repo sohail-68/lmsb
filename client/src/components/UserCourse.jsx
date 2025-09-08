@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -10,8 +10,8 @@ import {
   CardMedia,
   Button,
   Chip,
-} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const UserCourse = () => {
   const [profile, setProfile] = useState(null);
@@ -21,11 +21,11 @@ const UserCourse = () => {
   // Fetch user profile
   async function fetchProfile() {
     try {
-      const response = await fetch('learningm-production.up.railway.app/api/auth/profile', {
-        method: 'GET',
+      const response = await fetch("http://localhost:5000/api/auth/profile", {
+        method: "GET",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`, // Replace with actual token
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
         },
       });
 
@@ -34,8 +34,6 @@ const UserCourse = () => {
       }
 
       const data = await response.json();
-      console.log(data);
-      
       setProfile(data.data);
     } catch (err) {
       setError(err.message);
@@ -45,177 +43,166 @@ const UserCourse = () => {
   useEffect(() => {
     fetchProfile();
   }, []);
-console.log(profile);
 
   const handleNavigation = (id) => {
     navigate(`/user/lect/${id}`);
   };
 
   const Quiz = (id) => {
-    navigate(`/user/quuize/${id}`)
-
+    navigate(`/user/quuize/${id}`);
   };
+
+  if (error) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+        <Alert severity="error">{error}</Alert>
+      </Box>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+        <CircularProgress size={70} thickness={4.5} sx={{ color: "#1e3a8a" }} />
+      </Box>
+    );
+  }
+
   return (
     <Box
-    sx={{
-      minHeight: "100vh",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      backgroundColor: "#e3f2fd",
-      padding: 3,
-    }}
-  >
-    <Card
       sx={{
-        borderRadius: "20px",
-        background: "rgba(255, 255, 255, 0.85)",
-        backdropFilter: "blur(15px)",
-        boxShadow: "0 12px 35px rgba(0, 0, 0, 0.2)",
-        padding: 4,
-        textAlign: "center",
+        minHeight: "100vh",
+        background: "linear-gradient(to bottom right, #f8fafc, #e2e8f0)",
+        py: 6,
+        px: 3,
       }}
     >
-      <CardContent>
-        <Typography
-          variant="h3"
-          sx={{
-            fontWeight: "bold",
-            color: "#1e3a8a",
-            textShadow: "0 2px 10px rgba(0, 0, 0, 0.3)",
-          }}
-        >
-          📚 My Courses 🏆
-        </Typography>
+      <Typography
+        variant="h4"
+        align="center"
+        sx={{ fontWeight: "bold", color: "#1e3a8a", mb: 5 }}
+      >
+        My Enrolled Courses
+      </Typography>
 
-        {error ? (
-          <Alert severity="error" sx={{ marginTop: 2 }}>
-            {error}
-          </Alert>
-        ) : profile ? (
-          <Box>
-            <Typography
-              variant="h5"
+      <Grid container spacing={4} justifyContent="center">
+        {profile.enrolledCourses?.map((course) => (
+          <Grid item xs={12} sm={6} md={4} key={course._id}>
+            <Card
               sx={{
-                color: "#4b5563",
-                fontWeight: "bold",
-                marginBottom: 3,
+                borderRadius: "16px",
+                overflow: "hidden",
+                backgroundColor: "#fff",
+                boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
+                transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                "&:hover": {
+                  transform: "translateY(-6px)",
+                  boxShadow: "0 16px 40px rgba(0,0,0,0.15)",
+                },
               }}
             >
-              🎓 Enrolled Courses: {profile.enrolledCourses?.length || 0}
-            </Typography>
+              <CardMedia
+                component="img"
+                alt={course.title}
+                height="180"
+                image={`http://localhost:5000/${course.courseThumbnail}`}
+                sx={{
+                  objectFit: "cover",
+                  borderBottom: "4px solid #1e3a8a",
+                }}
+              />
+              <CardContent sx={{ flex: 1, p: 3 }}>
+                <Typography
+                  variant="h6"
+                  sx={{ fontWeight: "bold", color: "#1e3a8a", mb: 1 }}
+                >
+                  {course.title}
+                </Typography>
 
-            <Grid container spacing={4}>
-              {profile.enrolledCourses?.map((course) => (
-                <Grid item xs={12} sm={6} md={4} key={course._id}>
-                  <Card
+                <Typography
+                  variant="body2"
+                  sx={{ color: "#6b7280", mb: 2, lineHeight: 1.5 }}
+                >
+                  {course.description.length > 80
+                    ? `${course.description.slice(0, 80)}...`
+                    : course.description}
+                </Typography>
+
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
+                  <Chip
+                    label={course.category}
                     sx={{
-                      borderRadius: "20px",
-                      overflow: "hidden",
-                      background: "rgba(255, 255, 255, 0.95)",
-                      backdropFilter: "blur(12px)",
-                      boxShadow: "0 12px 25px rgba(0, 0, 0, 0.15)",
-                      transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                      bgcolor: "#e0e7ff",
+                      color: "#1e3a8a",
+                      fontWeight: "600",
+                    }}
+                  />
+                  <Chip
+                    label={course.courseLevel}
+                    sx={{
+                      bgcolor: "#dbeafe",
+                      color: "#1e40af",
+                      fontWeight: "600",
+                    }}
+                  />
+                  <Chip
+                    label={
+                      course.coursePrice > 0 ? `₹${course.coursePrice}` : "Free"
+                    }
+                    sx={{
+                      bgcolor: course.coursePrice > 0 ? "#fee2e2" : "#dcfce7",
+                      color: course.coursePrice > 0 ? "#b91c1c" : "#065f46",
+                      fontWeight: "600",
+                    }}
+                  />
+                </Box>
+
+                <Box sx={{ mt: "auto", display: "flex", flexDirection: "column", gap: 1.5 }}>
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    sx={{
+                      backgroundColor: "#1e3a8a",
+                      fontWeight: "bold",
+                      borderRadius: "10px",
+                      py: 1.2,
+                      textTransform: "none",
+                      "&:hover": { backgroundColor: "#123c7e" },
+                    }}
+                    onClick={() => handleNavigation(course._id)}
+                  >
+                    Show Lectures
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    fullWidth
+                    sx={{
+                      borderColor: "#1e3a8a",
+                      color: "#1e3a8a",
+                      fontWeight: "bold",
+                      borderRadius: "10px",
+                      py: 1.2,
+                      textTransform: "none",
                       "&:hover": {
-                        transform: "scale(1.06)",
-                        boxShadow: "0 20px 50px rgba(0, 0, 0, 0.3)",
+                        backgroundColor: "#f1f5f9",
+                        borderColor: "#123c7e",
+                        color: "#123c7e",
                       },
                     }}
+                    onClick={() => Quiz(course._id)}
                   >
-                    <CardMedia
-                      component="img"
-                      alt={course.title}
-                      height="200"
-                      image={`learningm-production.up.railway.app/${course.courseThumbnail}`}
-                      sx={{
-                        objectFit: "cover",
-                        filter: "brightness(0.95)",
-                        borderBottom: "5px solid #1e3a8a",
-                      }}
-                    />
-                    <CardContent sx={{ padding: "20px" }}>
-                      <Typography
-                        variant="h6"
-                        sx={{ fontWeight: "bold", color: "#1e3a8a", marginBottom: 1 }}
-                      >
-                        🎯 {course.title}
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: "#6b7280", marginBottom: 1 }}>
-                        {course.description.length > 60
-                          ? `${course.description.slice(0, 60)}...`
-                          : course.description}
-                      </Typography>
-                      <Chip
-                        label={`📂 Category: ${course.category}`}
-                        sx={{
-                          backgroundColor: "#e2e8f0",
-                          color: "#1e3a8a",
-                          fontWeight: "bold",
-                          marginBottom: 1,
-                        }}
-                      />
-                      <Typography
-                        variant="subtitle2"
-                        sx={{ color: "#1e3a8a", fontWeight: "600", marginBottom: 1 }}
-                      >
-                        📈 Level: {course.courseLevel}
-                      </Typography>
-                      <Typography
-                        variant="subtitle1"
-                        sx={{ fontWeight: "bold", color: "#1e3a8a", marginBottom: 2 }}
-                      >
-                        💰 Price: {course.coursePrice > 0 ? `₹${course.coursePrice}` : "🎉 Free"}
-                      </Typography>
-                      <Button
-                        variant="contained"
-                        fullWidth
-                        sx={{
-                          backgroundColor: "#1e3a8a",
-                          fontWeight: "bold",
-                          textTransform: "none",
-                          padding:"1rem",
-
-                          "&:hover": { backgroundColor: "#123c7e" },
-                          marginBottom: 1,
-                        }}
-                        onClick={() => handleNavigation(course._id)}
-                      >
-                        🚀 Show Lectures
-                      </Button>
-                      <Button
-                        variant="contained"
-                        fullWidth
-                        sx={{
-                          backgroundColor: "ThreeDDarkShadow",
-                          fontWeight: "bold",
-                          padding:"1rem",
-                          textTransform: "none",
-                        }}
-                        onClick={() => Quiz(course._id)}
-                      >
-                        🧠 Take Quiz
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-          </Box>
-        ) : (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "200px",
-            }}
-          >
-            <CircularProgress />
-          </Box>
-        )}
-      </CardContent>
-    </Card>
-  </Box>
+                    Take Quiz
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
   );
 };
 

@@ -60,77 +60,183 @@ console.log(answers);
   const totalQuestions = quizzes.reduce((acc, quiz) => acc + quiz.questions.length, 0);
 
   return (
-    <Box  sx={{ textAlign: "center", padding: 4, borderRadius: 3, background: "linear-gradient(135deg, #f3e7e9, #e3eeff)", color: "#333" }}>
-      <Typography variant="h4" gutterBottom color="primary">📝 Take Your Quiz</Typography>
-      <Grid container spacing={4} justifyContent="center">
-        {quizzes.map((quiz, quizIndex) => (
-          quiz.questions.map((q, questionIndex) => (
-            <Grid item xs={12} md={6} key={q._id}>
-              <Card sx={{ p: 3, borderRadius: 3, background: "linear-gradient(135deg, #ffdde1, #ee9ca7)", boxShadow: 5, color: "#333" }}>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom color="secondary">📚 {quiz.title}</Typography>
-                  <Box sx={{ mb: 2, p: 2, borderRadius: 2, background: "linear-gradient(135deg, #f6d365, #fda085)", boxShadow: 2 }}>
-                    <Typography variant="body1">🎯 {q.question}</Typography>
-                    <Grid container spacing={2} mt={1}>
-                      {q.options.map((option, optionIndex) => (
-                        <Grid item xs={12} key={optionIndex}>
-                          <Button
-                            fullWidth
-                            variant={answers[quizIndex][questionIndex] === option ? "contained" : "outlined"}
-                            color={answers[quizIndex][questionIndex] === option ? "success" : "inherit"}
-                            onClick={() => handleSelectAnswer(quizIndex, questionIndex, option)}
-                            disabled={submittedQuizzes[quiz._id]}
-                            sx={{ textTransform: "none", fontSize: "1rem", borderColor: "#555", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "20px", padding: "12px", transition: "all 0.3s ease", '&:hover': { backgroundColor: '#ffdeeb', transform: 'scale(1.05)' } }}
-                          >
-                            {answers[quizIndex][questionIndex] === option ? <CheckCircle sx={{ mr: 1, color: "green" }} /> : <Cancel sx={{ mr: 1, color: "red" }} />} {option}
-                          </Button>
-                        </Grid>
-                      ))}
-                    </Grid>
-                  </Box>
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    onClick={() => handleSubmit(quiz._id, quizIndex)}
-                    disabled={submittedQuizzes[quiz._id]}
-                    sx={{ mt: 2, fontSize: "1rem", fontWeight: "bold" }}
-                  >
-                    🚀 {submittedQuizzes[quiz._id] ? "Submitted ✅" : "Submit Quiz"}
-                  </Button>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))
-        ))}
-      </Grid>
-      {submitted && (
-        <Card sx={{ mt: 4, p: 3, textAlign: "center", borderRadius: 3, background: "linear-gradient(135deg, #a1c4fd, #c2e9fb)", boxShadow: 3, color: "#000" }}>
-          <Typography variant="h5" color="primary" gutterBottom>
-            🎯 Your Score
-          </Typography>
-          <LinearProgress
-            variant="determinate"
-            value={(totalScore / totalQuestions) * 100}
-            sx={{ height: 10, borderRadius: 5, mb: 2, backgroundColor: "#f0f0f0" }}
-          />
-          <Typography variant="h6" color="success.main">
-            {totalScore} / {totalQuestions}
-          </Typography>
-          <Typography variant="body1" mt={1}>
-            {totalScore >= totalQuestions / 2 ? (
-              <>
-                <EmojiEvents color="success" /> Fantastic job! 🌟
-              </>
-            ) : (
-              <>
-                <SentimentDissatisfied color="error" /> Keep trying! 💪
-              </>
-            )}
-          </Typography>
-        </Card>
-      )}
-    </Box>
+   <Box
+  sx={{
+    textAlign: "center",
+    py: 6,
+    px: 3,
+    borderRadius: 4,
+    background: "linear-gradient(135deg, #fdfbfb, #ebedee)",
+    color: "#333",
+  }}
+>
+  {/* Header */}
+  <Typography
+    variant="h4"
+    gutterBottom
+    sx={{ fontWeight: "bold", color: "primary.main" }}
+  >
+    📝 Take Your Quiz
+  </Typography>
+
+  {/* Quiz Questions */}
+  <Grid container spacing={4} justifyContent="center">
+    {quizzes.map((quiz, quizIndex) =>
+      quiz.questions.map((q, questionIndex) => (
+        <Grid item xs={12} md={6} key={q._id}>
+          <Card
+            sx={{
+              p: 3,
+              borderRadius: 3,
+              backgroundColor: "#ffffff",
+              boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+              textAlign: "left",
+            }}
+          >
+            <CardContent>
+              <Typography
+                variant="h6"
+                gutterBottom
+                sx={{ fontWeight: 600, color: "secondary.main" }}
+              >
+                📚 {quiz.title}
+              </Typography>
+
+              {/* Question */}
+              <Box
+                sx={{
+                  mb: 2,
+                  p: 2,
+                  borderRadius: 2,
+                  backgroundColor: "#f8f9fa",
+                  border: "1px solid #e0e0e0",
+                }}
+              >
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  🎯 {q.question}
+                </Typography>
+              </Box>
+
+              {/* Options */}
+              <Grid container spacing={2} mt={1}>
+                {q.options.map((option, optionIndex) => (
+                  <Grid item xs={12} key={optionIndex}>
+                    <Button
+                      fullWidth
+                      variant={
+                        answers[quizIndex][questionIndex] === option
+                          ? "contained"
+                          : "outlined"
+                      }
+                      color={
+                        answers[quizIndex][questionIndex] === option
+                          ? "success"
+                          : "inherit"
+                      }
+                      onClick={() =>
+                        handleSelectAnswer(quizIndex, questionIndex, option)
+                      }
+                      disabled={submittedQuizzes[quiz._id]}
+                      sx={{
+                        textTransform: "none",
+                        fontSize: "1rem",
+                        borderRadius: "12px",
+                        py: 1.5,
+                        justifyContent: "flex-start",
+                        boxShadow:
+                          answers[quizIndex][questionIndex] === option
+                            ? "0 4px 12px rgba(0,0,0,0.15)"
+                            : "none",
+                        "&:hover": {
+                          backgroundColor: "#f1f3f5",
+                        },
+                      }}
+                    >
+                      {answers[quizIndex][questionIndex] === option ? (
+                        <CheckCircle sx={{ mr: 1, color: "green" }} />
+                      ) : (
+                        <Cancel sx={{ mr: 1, color: "grey.500" }} />
+                      )}
+                      {option}
+                    </Button>
+                  </Grid>
+                ))}
+              </Grid>
+
+              {/* Submit Button */}
+              <Button
+                fullWidth
+                variant="contained"
+                color="primary"
+                onClick={() => handleSubmit(quiz._id, quizIndex)}
+                disabled={submittedQuizzes[quiz._id]}
+                sx={{
+                  mt: 3,
+                  fontSize: "1rem",
+                  fontWeight: "bold",
+                  py: 1.5,
+                  borderRadius: "10px",
+                }}
+              >
+                🚀{" "}
+                {submittedQuizzes[quiz._id] ? "Submitted ✅" : "Submit Quiz"}
+              </Button>
+            </CardContent>
+          </Card>
+        </Grid>
+      ))
+    )}
+  </Grid>
+
+  {/* Results Section */}
+  {submitted && (
+    <Card
+      sx={{
+        mt: 6,
+        p: 4,
+        textAlign: "center",
+        borderRadius: 4,
+        background: "linear-gradient(135deg, #e0f7fa, #e1f5fe)",
+        boxShadow: "0 8px 20px rgba(0,0,0,0.1)",
+      }}
+    >
+      <Typography
+        variant="h5"
+        sx={{ fontWeight: "bold", color: "primary.main", mb: 2 }}
+      >
+        🎯 Your Score
+      </Typography>
+
+      <LinearProgress
+        variant="determinate"
+        value={(totalScore / totalQuestions) * 100}
+        sx={{
+          height: 12,
+          borderRadius: 6,
+          mb: 2,
+          backgroundColor: "#f0f0f0",
+        }}
+      />
+
+      <Typography variant="h6" sx={{ fontWeight: "bold", color: "success.main" }}>
+        {totalScore} / {totalQuestions}
+      </Typography>
+
+      <Typography variant="body1" mt={2}>
+        {totalScore >= totalQuestions / 2 ? (
+          <>
+            <EmojiEvents color="success" /> Fantastic job! 🌟
+          </>
+        ) : (
+          <>
+            <SentimentDissatisfied color="error" /> Keep trying! 💪
+          </>
+        )}
+      </Typography>
+    </Card>
+  )}
+</Box>
+
   );
 };
 

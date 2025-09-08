@@ -31,7 +31,7 @@ import axios from "axios";
 // let socket;
 // export const connectSocket = () => {
 //   if (!socket) {
-//     socket = io('learningm-production.up.railway.app'); // Connect to server
+//     socket = io('http://localhost:5000'); // Connect to server
 //   }
 //   return socket;
 // };
@@ -67,7 +67,7 @@ import axios from "axios";
 
 // Function to delete all bookmarks
 
-const API_URL = 'learningm-production.up.railway.app/api/auth';
+const API_URL = 'http://localhost:5000/api/auth';
 
 export const loginUser = async (email, password) => {
   try {

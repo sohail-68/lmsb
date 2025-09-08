@@ -105,7 +105,7 @@ const TestimonialSlider = () => {
   return (
     <Box sx={{ width: '100%', padding: '60px 0', bgcolor: '#f4f6f8' }}>
       <Typography
-        variant="h2"
+        variant="h4"
         align="center"
         gutterBottom
         sx={{
@@ -116,7 +116,6 @@ const TestimonialSlider = () => {
           letterSpacing: 1,
           fontStyle: "italic",
           fontFamily: 'Roboto, sans-serif',
-          lineHeight: 1,
           '@media (maxWidth: 600px)': {
             fontSize: '0.5rem',
             mb: 4,
@@ -129,7 +128,11 @@ const TestimonialSlider = () => {
       <Slider {...settings}>
         {testimonials.map((testimonial, index) => (
           <Box key={index} sx={{ p: 2 }}>
-            <TestimonialCard>
+            <TestimonialCard
+            sx={{
+              borderRadius:"2rem"
+            }}
+            >
               <CardMedia
                 component="img"
                 height="200"
@@ -153,8 +156,13 @@ const TestimonialSlider = () => {
                 <Typography variant="h6" align="center" gutterBottom>
                   {testimonial.name}
                 </Typography>
-                <Rating value={testimonial.rating} readOnly sx={{ display: 'flex', justifyContent: 'center', mb: 2 }} />
-                <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+<Box sx={{
+  display:"flex",justifyContent:"center",alignItems:"center"
+}}>
+
+                  <Rating value={testimonial.rating} readOnly sx={{ display: 'flex', justifyContent: 'center', mb: 2,alignItems:"center" }} />
+</Box>
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems:"center", mb: 2 }}>
                   <FormatQuoteIcon color="primary" fontSize="large" />
                 </Box>
                 <Typography variant="body2" align="center" color="text.secondary" sx={{ fontStyle: 'italic' }}>

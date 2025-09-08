@@ -43,7 +43,6 @@ exports.updateCourseProgress = async (req, res) => {
   try {
     const { courseId, lectureId } = req.body;
     const userId = req.user.id; // Assume `req.user` contains the authenticated user
-console.log("a",courseId,lectureId);
 
     // Fetch or create progress record
     let progress = await Progress.findOne({ user: userId, course: courseId });
@@ -55,7 +54,6 @@ console.log("a",courseId,lectureId);
       });
     } else if (!progress.completedLectures.includes(lectureId)) {
       progress.completedLectures.push(lectureId);
-      console.log("d");
       
       await progress.save();
     }
