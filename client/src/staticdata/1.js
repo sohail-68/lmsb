@@ -117,7 +117,8 @@ const CoursePage = () => {
           component="img"
           alt={course.title}
           height="350"
-          image={`http://localhost:5000/${course.courseThumbnail}`}
+          image={`http://localhost:5000
+/${course.courseThumbnail}`}
           sx={{
             objectFit: "cover",
           }}
