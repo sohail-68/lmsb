@@ -72,7 +72,7 @@ const LectureDetail = () => {
         {isVideo ? (
           <CardMedia
             component="video"
-            src={`http://localhost:5000/${lecture.video.replace(/\\/g, '/')}`}
+            src={`https://lmsb-apt8.onrender.com/${lecture.video.replace(/\\/g, '/')}`}
             controls
             title={lecture.title}
             style={{

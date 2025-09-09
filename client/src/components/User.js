@@ -67,7 +67,7 @@ console.log(courses);
               <CardMedia
                 component="img"
                 height="180"
-                image={`http://localhost:5000/${course.courseThumbnail.replace(/\\/g, '/')}`}
+                image={`https://lmsb-apt8.onrender.com/${course.courseThumbnail.replace(/\\/g, '/')}`}
                 alt={`${course.title} Thumbnail`}
                 sx={{
                   borderBottom: '4px solid #1976d2',

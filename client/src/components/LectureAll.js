@@ -32,7 +32,7 @@ const LectureAll = () => {
   useEffect(() => {
     const fetchLectures = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/courses/a', {
+        const response = await axios.get('https://lmsb-apt8.onrender.com/api/courses/a', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -101,14 +101,14 @@ const LectureAll = () => {
                 <VideoContainer
                 
                   controls
-                  src={`http://localhost:5000/${lecture.video.replace(/\\/g, '/')}`}
+                  src={`https://lmsb-apt8.onrender.com/${lecture.video.replace(/\\/g, '/')}`}
                 />
                 <Button
                   variant="contained"
                   color="primary"
                   size="small"
                   sx={{ mt: 2 }}
-                  href={`http://localhost:5000/${lecture.video.replace(/\\/g, '/')}`}
+                  href={`https://lmsb-apt8.onrender.com/${lecture.video.replace(/\\/g, '/')}`}
                   target="_blank"
                 >
                   Watch Full Video

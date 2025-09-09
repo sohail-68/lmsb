@@ -71,7 +71,7 @@ const Play = () => {
                     component="img"
                     alt={course.title}
                     height="250"
-                    image={`http://localhost:5000/${course.courseThumbnail}`}
+                    image={`https://lmsb-apt8.onrender.com/${course.courseThumbnail}`}
                     sx={{ objectFit: "cover" }}
                   />
                   <CardContent sx={{ padding: "20px", bgcolor: "#f8fafc" }}>

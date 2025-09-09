@@ -224,7 +224,7 @@ console.log(courses);
         return;
       }
 
-      const response = await axios.get(`http://localhost:5000/api/auth/s`, {
+      const response = await axios.get(`https://lmsb-apt8.onrender.com/api/auth/s`, {
         params: { searchTerm },
         headers: {
           Authorization: `Bearer ${token}` // Include the token if it exists
@@ -360,7 +360,7 @@ console.log(location);
                 component="img"
                 alt={course.title}
                 height="220"
-                image={`http://localhost:5000/${course.courseThumbnail}`}
+                image={`https://lmsb-apt8.onrender.com/${course.courseThumbnail}`}
                 sx={{ objectFit: "cover" }}
               />
 

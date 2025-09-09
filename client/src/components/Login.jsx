@@ -29,7 +29,7 @@ function Login() {
     e.preventDefault();
     dispatch(registerUserStart());
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
+      const response = await axios.post('https://lmsb-apt8.onrender.com/api/auth/login', { email, password });
       const userData = response.data.user;
       const token = response.data.token;
 

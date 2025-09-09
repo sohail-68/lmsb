@@ -21,7 +21,7 @@ const UserCourse = () => {
   // Fetch user profile
   async function fetchProfile() {
     try {
-      const response = await fetch("http://localhost:5000/api/auth/profile", {
+      const response = await fetch("https://lmsb-apt8.onrender.com/api/auth/profile", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -108,7 +108,7 @@ const UserCourse = () => {
                 component="img"
                 alt={course.title}
                 height="180"
-                image={`http://localhost:5000/${course.courseThumbnail}`}
+                image={`https://lmsb-apt8.onrender.com/${course.courseThumbnail}`}
                 sx={{
                   objectFit: "cover",
                   borderBottom: "4px solid #1e3a8a",

@@ -58,7 +58,7 @@ const CourseCard = ({ course, onEnroll, onShowLectures, isEnrolled }) => {
       <CardMedia
         component="img"
         height="200"
-        image={`http://localhost:5000/${course.courseThumbnail}`}
+        image={`https://lmsb-apt8.onrender.com/${course.courseThumbnail}`}
         alt={course.title}
       />
       <CardContentStyled>

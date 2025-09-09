@@ -194,7 +194,7 @@ const handleReviewSubmit = async (courseId) => {
           component="img"
           alt={course.title}
           height="100%"
-          image={`http://localhost:5000/${course.courseThumbnail}`}
+          image={`https://lmsb-apt8.onrender.com/${course.courseThumbnail}`}
           sx={{
             objectFit: "cover",
             height: { xs: 250, md: "100%" },

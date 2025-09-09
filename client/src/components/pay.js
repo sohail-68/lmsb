@@ -23,7 +23,7 @@ const Pay = () => {
       const token = localStorage.getItem('token');
 
       // Make API call to fetch payments
-      const response = await fetch('http://localhost:5000/api/courses/pay', {
+      const response = await fetch('https://lmsb-apt8.onrender.com/api/courses/pay', {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -91,7 +91,7 @@ const Pay = () => {
              <TableCell align="center">
                {payment.course && payment.course.image ? (
                  <img 
-                   src={`http://localhost:5000/${payment.course.image}`} 
+                   src={`https://lmsb-apt8.onrender.com/${payment.course.image}`} 
                    alt={payment.course.title || 'Course Image'} 
                    style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '5px' }}
                  />

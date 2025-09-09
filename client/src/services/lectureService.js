@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:5000/lecture';
+const BASE_URL = 'https://lmsb-apt8.onrender.com/lecture';
 
 /**
  * Fetch lectures for a specific course
@@ -41,7 +41,7 @@ export const getLectureById = async (id,token) => {
 export const Update = async (lectureId, formData, token) => {
   console.log(lectureId, formData, token);
   
-  const response = await axios.put(`http://localhost:5000/lecture/${lectureId}`, formData, {
+  const response = await axios.put(`https://lmsb-apt8.onrender.com/lecture/${lectureId}`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
       Authorization: `Bearer ${token}`,

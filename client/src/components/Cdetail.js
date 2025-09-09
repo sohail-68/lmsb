@@ -21,7 +21,7 @@ const Cdetail = () => {
 
   const Fetchdetails = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/courses/${id}`, {
+      const res = await axios.get(`https://lmsb-apt8.onrender.com/api/courses/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -55,7 +55,7 @@ console.log(data);
         <CardMedia
           component="img"
           height="300"
-                  image={`http://localhost:5000/${data.courseThumbnail.replace(/\\/g, '/')}`}
+                  image={`https://lmsb-apt8.onrender.com/${data.courseThumbnail.replace(/\\/g, '/')}`}
 
           alt={data.title}
         />

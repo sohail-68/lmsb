@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/quizzes';
+const API_URL = 'https://lmsb-apt8.onrender.com/api/quizzes';
 
 // ✅ Function to get token from local storage
 const getAuthToken = () => {

@@ -42,7 +42,7 @@ const CoursesList = () => {
     const fetchCourses = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('http://localhost:5000/api/courses/admin', {
+        const response = await axios.get('https://lmsb-apt8.onrender.com/api/courses/admin', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -68,7 +68,7 @@ console.log(courses);
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this course?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/courses/${id}`, {
+        await axios.delete(`https://lmsb-apt8.onrender.com/api/courses/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -173,7 +173,7 @@ console.log(courses);
                 <CardMedia
                   component="img"
                   height="140"
-                  image={`http://localhost:5000/${course.courseThumbnail.replace(/\\/g, '/')}`}
+                  image={`https://lmsb-apt8.onrender.com/${course.courseThumbnail.replace(/\\/g, '/')}`}
                   alt={`${course.title} Thumbnail`}
                 />
                 <CardContent>

@@ -6,7 +6,7 @@ export const fetchCourses = createAsyncThunk(
   async (searchTerm, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/auth/s', {
+      const response = await axios.get('https://lmsb-apt8.onrender.com/api/auth/s', {
         params: { searchTerm },
         headers: { Authorization: `Bearer ${token}` },
       });
