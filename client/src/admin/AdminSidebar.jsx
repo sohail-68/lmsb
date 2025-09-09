@@ -29,7 +29,7 @@ const AdminSidebar = ({ isOpen,handleSidebarToggle }) => {
   const logOutUser = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/logo",
+        "https://lmsb-apt8.onrender.com/api/auth/logo",
         {}, // Pass an empty object for the body if no data is needed
         {
           headers: {

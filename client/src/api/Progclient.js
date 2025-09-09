@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const Prog = axios.create({
-  baseURL: 'http://localhost:5000/progress', // Update to your API's base URL
+  baseURL: 'https://lmsb-apt8.onrender.com/progress', // Update to your API's base URL
 });
 
 // Automatically attach token if it exists
