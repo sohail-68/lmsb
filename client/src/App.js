@@ -31,6 +31,7 @@ const PlayQuizz = lazy(() => import("./components/Play.js"));
 const QuizeGame = lazy(() => import("./components/QuizeGame.js"));
 const QuizePage = lazy(() => import("./components/QuizePage.js"));
 const Cdetail = lazy(() => import("./components/Cdetail.js"));
+import HomePage from "./pages/HomePage.jsx";
 
 function App() {
   return (
@@ -109,6 +110,15 @@ function App() {
 
           {/* User Routes */}
           <Route path="/user" element={<UserLayout />}>
+              <Route
+    index
+    element={
+      <ProtectedRoute
+        element={<HomePage />}
+        allowedRoles={["student", "admin"]}
+      />
+    }
+  />
             <Route
               path="profile"
               element={<ProtectedRoute element={<Profile />} allowedRoles={["student", "admin"]} />}
