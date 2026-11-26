@@ -1,4 +1,4 @@
-  import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Grid,
   Card,
@@ -13,58 +13,95 @@ import {
   TextField,
   IconButton,
   Rating,
+  Stack,
+  Avatar,
+  Divider,
+  Tooltip,
 } from "@mui/material";
-import { FaHeart, FaInfoCircle, FaStar } from "react-icons/fa";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import SearchIcon from "@mui/icons-material/Search";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  FavoriteBorder,
+  Favorite,
+  InfoOutlined,
+  Star,
+  PlayCircleOutline,
+  PeopleAlt,
+  VerifiedUser,
+  WorkspacePremium,
+} from "@mui/icons-material";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
 import apiClient from "../api/apiClient";
-import { Link } from "@mui/icons-material";
-import { motion } from "framer-motion"; // Im
-import axios from "axios";
+
+// ─── Theme Tokens (matches your Navbar & Feature) ───
+const COLORS = {
+  primary: "#4f46e5",
+  primaryDark: "#4338ca",
+  accent: "#8b5cf6",
+  text: "#0f172a",
+  textMuted: "#64748b",
+  gradient: "linear-gradient(135deg, #4f46e5 0%, #8b5cf6 100%)",
+  shadow: "rgba(79, 70, 229, 0.25)",
+};
+
 const CoursePage = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [review, setReview] = useState({}); // Changed to an object to handle reviews for specific courses
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sels, setsels] = useState("");
+  const [review, setReview] = useState({});
+  const [wishlist, setWishlist] = useState({}); // track wishlist locally
   const navigate = useNavigate();
-  const location=useLocation()
-  const pa=useSearchParams()
-console.log(location);
+  const location = useLocation();
 
-    const fetchCourses = async () => {
-      try {
-        const response = await apiClient.get("/courses");
-        setCourses(response.data);
-        setLoading(false);
-      } catch (err) {
-        console.error(err);
-        setError("Failed to fetch courses");
-        setLoading(false);
-      }
-    };
+  // ─── Fetch Courses ───
+  const fetchCourses = async () => {
+    try {
+      const response = await apiClient.get("/courses");
+      setCourses(response.data);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to fetch courses. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
+    fetchCourses();
+  }, []);
 
-  // Handle review changes for a specific course
-  const handleReviewChange = (courseId, event) => {
-    const { name, value } = event.target;
-    console.log("ratting", courseId, "e", event);
-    console.log(name);
-
-    setReview((prevReview) => ({
-      ...prevReview,
+  // ─── Review Handler ───
+  const handleReviewChange = (courseId, field, value) => {
+    setReview((prev) => ({
+      ...prev,
       [courseId]: {
-        ...prevReview[courseId],
-        [name]: value,
+        ...prev[courseId],
+        [field]: value,
       },
     }));
   };
-console.log(courses);
 
-  // Enroll in course functionality
+  const handleReviewSubmit = async (courseId) => {
+    const courseReview = review[courseId];
+    if (!courseReview || !courseReview.rating || !courseReview.comment?.trim()) {
+      toast.warn("Please provide both rating and comment.");
+      return;
+    }
+
+    try {
+      const response = await apiClient.post(`/courses/${courseId}/review`, courseReview);
+      toast.success(response.data.message || "Review submitted!");
+      setReview((prev) => ({
+        ...prev,
+        [courseId]: { rating: 0, comment: "" },
+      }));
+    } catch (err) {
+      toast.error("Failed to submit review.");
+    }
+  };
+
+  // ─── Enroll Handler ───
   const enrollInCourse = async (course) => {
     try {
       const response = await apiClient.post(`/courses/${course._id}/enroll`);
@@ -80,20 +117,17 @@ console.log(courses);
           order_id: orderData.orderId,
           handler: async (response) => {
             try {
-              const paymentVerificationResponse = await apiClient.post(
-                `/courses/verify-payment`,
-                {
-                  paymentId: response.razorpay_payment_id,
-                  orderId: response.razorpay_order_id,
-                  signature: response.razorpay_signature,
-                  courseId: orderData.courseId,
-                }
-              );
-              alert(paymentVerificationResponse.data.message);
-              // navigate(`/user/lect/${course._id}`);
+              const verifyRes = await apiClient.post(`/courses/verify-payment`, {
+                paymentId: response.razorpay_payment_id,
+                orderId: response.razorpay_order_id,
+                signature: response.razorpay_signature,
+                courseId: orderData.courseId,
+              });
+              toast.success(verifyRes.data.message);
+              navigate(`/user/lect/${course._id}`);
             } catch (err) {
               console.error("Payment Verification Failed:", err);
-              alert("Payment verification failed.");
+              toast.error("Payment verification failed.");
             }
           },
           prefill: {
@@ -101,378 +135,519 @@ console.log(courses);
             email: "test@example.com",
             contact: "9999999999",
           },
-          theme: {
-            color: "#3399cc",
-          },
+          theme: { color: COLORS.primary },
         };
-
         const razorpay = new window.Razorpay(options);
         razorpay.open();
       } else {
-        toast.success(`You have enrolled in "${course.title}"`, {
-          position: 'top-right',
-          autoClose: 2000,
-        });
-        alert(response.data.message || "Successfully enrolled in the course!");
-        // navigate(`/user/lect/${course._id}`);
+        toast.success(`Enrolled in "${course.title}"!`);
+        navigate(`/user/lect/${course._id}`);
       }
     } catch (error) {
-      if (error.response && error.response.status === 400) {
-        alert(
-          error.response.data.message ||
-            "You are already enrolled in this course."
-        );
+      if (error.response?.status === 400) {
+        toast.info(error.response.data.message || "Already enrolled");
         navigate(`/user/lect/${course._id}`);
       } else {
         console.error("Enrollment Error:", error);
-        alert("Enrollment failed.");
+        toast.error("Enrollment failed.");
       }
     }
   };
 
-  // Handle review submission for specific course
-  const handleReviewSubmit = async (courseId) => {
-    const courseReview = review[courseId];
-    console.log(courseReview);
-
-    if (
-      !courseReview ||
-      courseReview.rating === 0 ||
-      courseReview.comment === ""
-    ) {
-      alert("Please provide both rating and comment.");
-      return;
-    }
-
-    try {
-      const response = await apiClient.post(
-        `/courses/${courseId}/review`,
-        courseReview
-      );
-      alert(response.data.message);
-      setReview((prevReview) => ({
-        ...prevReview,
-        [courseId]: { rating: 0, comment: "" }, // Reset review after submission
-      }));
-    } catch (err) {
-      console.error(err);
-      alert("Failed to submit review.");
-    }
-  };
-
-  // Handle search term change
-
+  // ─── Wishlist Handler ───
   const addToWishlist = async (courseId) => {
     try {
       const response = await apiClient.post(
         `/courses/${courseId}/wishlist`,
         {},
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        }
+        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
-  
-      console.log(response.data.message); // For debugging purposes, you can check the response structure
-  
-      if (response.data.message === "Added to wishlist") {
-        toast.success('Added to your wishlist!', {
-          position: 'top-right',
-          autoClose: 2000,
-        });
-      } else if (response.data.message === "Removed from wishlist") {
-        toast.success('Removed from your wishlist!', {
-          position: 'top-right',
-          autoClose: 2000,
-        });
+
+      const message = response.data.message;
+      if (message === "Added to wishlist") {
+        setWishlist((prev) => ({ ...prev, [courseId]: true }));
+        toast.success("Added to your wishlist!");
+      } else if (message === "Removed from wishlist") {
+        setWishlist((prev) => ({ ...prev, [courseId]: false }));
+        toast.success("Removed from your wishlist!");
       }
-  
-      return response.data; // This will return the full response if needed elsewhere
     } catch (error) {
-      // Error handling if the request fails
-      const errorMessage =
-        error.response?.data?.message || "Adding to wishlist failed";
-      toast.error(errorMessage, {
-        position: 'top-right',
-        autoClose: 2000,
-      });
-      throw errorMessage; // You may want to throw the error if you want to handle it elsewhere
+      toast.error(error.response?.data?.message || "Wishlist update failed");
     }
   };
-  
-  function HandDetali(course) {
+
+  const goToDetails = (course) => {
     navigate(`/user/detail/${course._id}`);
+  };
+
+  // ─── Loading State ───
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          minHeight: "70vh",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 3,
+          background: "linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%)",
+        }}
+      >
+        <CircularProgress
+          size={60}
+          thickness={4}
+          sx={{ color: COLORS.primary }}
+        />
+        <Typography sx={{ color: COLORS.textMuted, fontWeight: 500 }}>
+          Loading your courses...
+        </Typography>
+      </Box>
+    );
   }
-  useEffect(()=>{
-    fetchCourses();
-
-  },[])
-  console.log(courses);
-  
-  const handleSearch = async () => {
-    if (!searchTerm || searchTerm.trim() === "") {
-      alert("Please enter a valid search term.");
-      return;
-    }
-
-    setLoading(true);  // Set loading to true when the request starts
-    setError('');  // Reset error message
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        alert("You need to be logged in to search.");
-        setLoading(false);
-        return;
-      }
-
-      const response = await axios.get(`https://lmsb-apt8.onrender.com/api/auth/s`, {
-        params: { searchTerm },
-        headers: {
-          Authorization: `Bearer ${token}` // Include the token if it exists
-        }
-      });
-console.log(response);
-console.log(location);
-
-      if (response.data.courses) {
-        setCourses(response.data.courses);  // Set the courses data to state
-      } else {
-        setCourses([]);  // Clear courses if no data found
-      }
-      window.history.pushState(
-        null, 
-        '', 
-        `${location.pathname}?term=${encodeURIComponent(searchTerm)}`
-      );
- 
-    } catch (err) {
-      console.error(err);
-      setError('Failed to fetch courses. Please try again later.');  // Handle error
-    } finally {
-      setLoading(false);  // Set loading to false after the request completes
-    }
-  };
-  const handleSearchInputChange = (e) => {
-    setSearchTerm(e.target.value);
-    if(!e.target.value){
-      window.history.pushState(null, '', location.pathname);
-    }
-  };
 
   return (
-  <Box
-  sx={{
-    minHeight: "90vh",
-    bgcolor: "linear-gradient(135deg, #eef2ff, #e0e7ff, #c7d2fe)",
-    py: 6,
-    px: 2,
-  }}
->
-  {/* Heading */}
-  <Box display="flex" justifyContent="center" mb={5}>
-    <Typography
-      component={motion.h2}
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+    <Box
       sx={{
-        color: "#1e3a8a",
-        fontSize: { xs: "2rem", sm: "2.6rem" },
-        fontWeight: "bold",
-        letterSpacing: "0.02rem",
-        textAlign: "center",
+        minHeight: "100vh",
+        background: "linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%)",
+        py: { xs: 4, md: 6 },
+        px: { xs: 2, sm: 3, md: 6 },
       }}
     >
-      Our Courses
-    </Typography>
-  </Box>
+      <ToastContainer position="top-right" autoClose={2000} />
 
-  {/* Search Box */}
-  <Box
-    display="flex"
-    justifyContent="center"
-    alignItems="center"
-    mb={6}
-    gap={2}
-    sx={{
-      flexDirection: { xs: "column", sm: "row" },
-      maxWidth: "800px",
-      mx: "auto",
-    }}
-  >
-    <TextField
-      placeholder="Search courses by title or description"
-      variant="outlined"
-      value={searchTerm}
-      onChange={handleSearchInputChange}
-      sx={{
-        width: { xs: "100%", sm: "70%" },
-        bgcolor: "#fff",
-        borderRadius: "10px",
-      }}
-    />
-    <Button
-      variant="contained"
-      color="primary"
-      onClick={handleSearch}
-      sx={{
-        borderRadius: "10px",
-        px: 3,
-        py: 1.2,
-        background: "linear-gradient(135deg, #1e3a8a, #3b82f6)",
-        "&:hover": {
-          background: "linear-gradient(135deg, #1e40af, #2563eb)",
-        },
-      }}
-    >
-      Search
-    </Button>
-  </Box>
+      {/* ═══ Page Header ═══ */}
+      <Box
+        component={motion.div}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        sx={{ textAlign: "center", mb: { xs: 4, md: 6 } }}
+      >
+        <Typography
+          sx={{
+            fontSize: { xs: "0.75rem", md: "0.85rem" },
+            fontWeight: 700,
+            color: COLORS.primary,
+            textTransform: "uppercase",
+            letterSpacing: 2,
+            mb: 1,
+          }}
+        >
+          Explore Our Library
+        </Typography>
+        <Typography
+          component="h1"
+          sx={{
+            fontSize: { xs: "2rem", sm: "2.5rem", md: "3rem" },
+            fontWeight: 800,
+            letterSpacing: "-1.5px",
+            lineHeight: 1.1,
+            background: COLORS.gradient,
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+            mb: 1.5,
+          }}
+        >
+          Discover Your Next Course
+        </Typography>
+        <Typography
+          sx={{
+            color: COLORS.textMuted,
+            fontSize: { xs: "0.9rem", md: "1.05rem" },
+            maxWidth: 560,
+            mx: "auto",
+          }}
+        >
+          Learn from world-class instructors, master new skills, and advance your career.
+        </Typography>
+      </Box>
 
-  {/* Loading / Error */}
-  {loading && (
-    <Box display="flex" justifyContent="center" alignItems="center" height="50vh">
-      <CircularProgress size={80} thickness={4.5} sx={{ color: "#1e3a8a" }} />
-    </Box>
-  )}
-  {error && <Alert severity="error">{error}</Alert>}
+      {/* ═══ Error ═══ */}
+      {error && (
+        <Alert
+          severity="error"
+          sx={{ mb: 3, maxWidth: 700, mx: "auto", borderRadius: "12px" }}
+        >
+          {error}
+        </Alert>
+      )}
 
-  {/* Courses Grid */}
-  <Box sx={{ maxWidth: "1200px", mx: "auto" }}>
-    <Grid container spacing={4}>
-      {courses.map((course) => (
-        <Grid item xs={12} sm={6} md={4} key={course._id}>
-          <motion.div whileHover={{ scale: 1.05, y: -6 }}>
-            <Card
+      {/* ═══ Courses Grid ═══ */}
+      <Grid
+        container
+        spacing={{ xs: 3, md: 4 }}
+        sx={{ maxWidth: 1400, mx: "auto" }}
+      >
+        {courses.length === 0 && !loading && (
+          <Grid item xs={12}>
+            <Box
               sx={{
-                backdropFilter: "blur(16px)",
-                background: "rgba(255, 255, 255, 0.95)",
-                boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
-                borderRadius: "18px",
-                overflow: "hidden",
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                transition: "all 0.3s ease",
+                textAlign: "center",
+                py: 10,
+                bgcolor: "#fff",
+                borderRadius: "20px",
+                boxShadow: "0 4px 20px rgba(15,23,42,0.06)",
               }}
             >
-              {/* Thumbnail */}
-              <CardMedia
-                component="img"
-                alt={course.title}
-                height="220"
-                image={`https://lmsb-apt8.onrender.com/${course.courseThumbnail}`}
-                sx={{ objectFit: "cover" }}
-              />
+              <Typography variant="h6" sx={{ color: COLORS.textMuted }}>
+                No courses found
+              </Typography>
+            </Box>
+          </Grid>
+        )}
 
-              {/* Content */}
-              <CardContent sx={{ flex: 1, display: "flex", flexDirection: "column", p: 3 }}>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    fontWeight: "600",
-                    color: "#1e3a8a",
-                    mb: 1.5,
-                    lineHeight: 1.4,
-                  }}
-                >
-                  {course.title}
-                </Typography>
+        {courses.map((course, index) => {
+          const isEnrolled = course.enrolledUsers?.includes(
+            localStorage.getItem("userid")
+          );
+          const currentReview = review[course._id] || { rating: 0, comment: "" };
+          const isWishlisted = wishlist[course._id];
 
-                {/* Tags */}
-                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 2 }}>
-                  <Chip
-                    label={course.category}
+          return (
+            <Grid item xs={12} sm={6} lg={4} key={course._id}>
+              <Card
+                component={motion.div}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.05 }}
+                sx={{
+                  borderRadius: "20px",
+                  overflow: "hidden",
+                  background: "#fff",
+                  boxShadow: "0 4px 20px rgba(15, 23, 42, 0.06)",
+                  border: "1px solid rgba(226, 232, 240, 0.8)",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  transition: "all 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
+                  "&:hover": {
+                    transform: "translateY(-6px)",
+                    boxShadow: `0 20px 40px ${COLORS.shadow}`,
+                    "& .course-image": { transform: "scale(1.08)" },
+                  },
+                }}
+              >
+                {/* ─── Image with Overlay Badges ─── */}
+                <Box sx={{ position: "relative", overflow: "hidden", height: 220 }}>
+                  <CardMedia
+                    className="course-image"
+                    component="img"
+                    alt={course.title}
+                    image={`https://lmsb-apt8.onrender.com/${course.courseThumbnail}`}
                     sx={{
-                      bgcolor: "#1e3a8a",
-                      color: "#fff",
-                      borderRadius: "8px",
-                      fontSize: "0.8rem",
+                      height: "100%",
+                      width: "100%",
+                      objectFit: "cover",
+                      transition: "transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
                     }}
                   />
-                  <Chip
-                    label={course.courseLevel}
+
+                  {/* Gradient overlay */}
+                  <Box
                     sx={{
-                      bgcolor: "#3b82f6",
-                      color: "#fff",
-                      borderRadius: "8px",
-                      fontSize: "0.8rem",
+                      position: "absolute",
+                      inset: 0,
+                      background:
+                        "linear-gradient(to top, rgba(15,23,42,0.7) 0%, transparent 50%)",
                     }}
                   />
+
+                  {/* Price badge (top-left) */}
                   <Chip
-                    label={course.coursePrice > 0 ? `₹${course.coursePrice}` : "Free"}
+                    label={
+                      course.coursePrice > 0
+                        ? `₹${course.coursePrice}`
+                        : "FREE"
+                    }
+                    size="small"
                     sx={{
-                      bgcolor: course.coursePrice > 0 ? "#3b82f6" : "#10b981",
+                      position: "absolute",
+                      top: 12,
+                      left: 12,
+                      background:
+                        course.coursePrice > 0 ? COLORS.gradient : "#10b981",
                       color: "#fff",
+                      fontWeight: 800,
+                      fontSize: "0.78rem",
                       borderRadius: "8px",
-                      fontSize: "0.8rem",
+                      height: 28,
+                      px: 1,
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
                     }}
                   />
-                </Box>
 
-                {/* Stats */}
-                <Typography sx={{ fontSize: "0.9rem", color: "#6B7280" }}>
-                  Enrollments: {course.analytics.enrollments}
-                </Typography>
-                <Typography sx={{ fontSize: "0.9rem", color: "#6B7280", mb: 2 }}>
-                  Rating: {course.analytics.averageRating}
-                </Typography>
-
-                {/* Actions */}
-                <Box
-                  sx={{
-                    mt: "auto",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    gap: 2,
-                  }}
-                >
-                  <Button
-                    variant="outlined"
-                    sx={{
-                      flex: 1,
-                      color: "#1e3a8a",
-                      borderColor: "#1e3a8a",
-                      borderRadius: "10px",
-                      py: 1,
-                      fontWeight: 600,
-                      "&:hover": {
-                        borderColor: "#1e40af",
-                        backgroundColor: "rgba(30,58,138,0.05)",
-                      },
-                    }}
-                    onClick={() => HandDetali(course)}
-                  >
-                    Details
-                  </Button>
-                  <Button
-                    variant="contained"
-                    sx={{
-                      flex: 1,
-                      background: "linear-gradient(135deg, #3b82f6, #2563eb)",
-                      borderRadius: "10px",
-                      py: 1,
-                      fontWeight: 600,
-                      "&:hover": {
-                        background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
-                      },
-                    }}
+                  {/* Wishlist icon (top-right) */}
+                  <IconButton
                     onClick={() => addToWishlist(course._id)}
+                    sx={{
+                      position: "absolute",
+                      top: 10,
+                      right: 10,
+                      background: "rgba(255,255,255,0.92)",
+                      backdropFilter: "blur(8px)",
+                      width: 38,
+                      height: 38,
+                      "&:hover": { background: "#fff" },
+                    }}
                   >
-                    Wishlist
-                  </Button>
+                    {isWishlisted ? (
+                      <Favorite sx={{ color: "#e11d48", fontSize: 20 }} />
+                    ) : (
+                      <FavoriteBorder
+                        sx={{ color: COLORS.textMuted, fontSize: 20 }}
+                      />
+                    )}
+                  </IconButton>
+
+                  {/* Category + level chips (bottom-left overlay) */}
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    sx={{ position: "absolute", bottom: 12, left: 12 }}
+                  >
+                    <Chip
+                      icon={<WorkspacePremium sx={{ fontSize: "14px !important", color: "#fff !important" }} />}
+                      label={course.category}
+                      size="small"
+                      sx={{
+                        background: "rgba(255,255,255,0.25)",
+                        backdropFilter: "blur(10px)",
+                        color: "#fff",
+                        fontWeight: 600,
+                        fontSize: "0.7rem",
+                        border: "1px solid rgba(255,255,255,0.3)",
+                      }}
+                    />
+                    <Chip
+                      label={course.courseLevel}
+                      size="small"
+                      sx={{
+                        background: "rgba(255,255,255,0.25)",
+                        backdropFilter: "blur(10px)",
+                        color: "#fff",
+                        fontWeight: 600,
+                        fontSize: "0.7rem",
+                        border: "1px solid rgba(255,255,255,0.3)",
+                      }}
+                    />
+                  </Stack>
                 </Box>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </Grid>
-      ))}
-    </Grid>
-  </Box>
-</Box>
 
+                {/* ─── Content ─── */}
+                <CardContent
+                  sx={{
+                    p: 2.5,
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    "&:last-child": { pb: 2.5 },
+                  }}
+                >
+                  {/* Title */}
+                  <Typography
+                    sx={{
+                      fontWeight: 700,
+                      fontSize: "1.1rem",
+                      color: COLORS.text,
+                      lineHeight: 1.3,
+                      mb: 1.5,
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                      minHeight: "2.6em",
+                    }}
+                  >
+                    {course.title}
+                  </Typography>
 
-     
-     
+                  {/* Stats row */}
+                  <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                      <PeopleAlt sx={{ fontSize: 16, color: COLORS.textMuted }} />
+                      <Typography
+                        sx={{ fontSize: "0.8rem", color: COLORS.textMuted, fontWeight: 500 }}
+                      >
+                        {course.analytics?.enrollments || 0} enrolled
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                      <Star sx={{ fontSize: 16, color: "#fbbf24" }} />
+                      <Typography
+                        sx={{ fontSize: "0.8rem", color: COLORS.text, fontWeight: 600 }}
+                      >
+                        {course.analytics?.averageRating?.toFixed(1) || "0.0"}
+                      </Typography>
+                    </Box>
+                  </Stack>
+
+                  <Divider sx={{ mb: 2 }} />
+
+                  {/* ─── Review Section (only if enrolled) ─── */}
+                  {isEnrolled ? (
+                    <Box sx={{ mb: 2 }}>
+                      <Typography
+                        sx={{
+                          fontSize: "0.82rem",
+                          fontWeight: 700,
+                          color: COLORS.text,
+                          mb: 1,
+                        }}
+                      >
+                        Rate this course
+                      </Typography>
+                      <Rating
+                        value={currentReview.rating}
+                        onChange={(e, val) => handleReviewChange(course._id, "rating", val)}
+                        size="small"
+                        sx={{ mb: 1 }}
+                      />
+                      <TextField
+                        value={currentReview.comment}
+                        onChange={(e) =>
+                          handleReviewChange(course._id, "comment", e.target.value)
+                        }
+                        variant="outlined"
+                        multiline
+                        rows={2}
+                        fullWidth
+                        size="small"
+                        placeholder="Share your experience..."
+                        sx={{
+                          mb: 1,
+                          "& .MuiOutlinedInput-root": {
+                            borderRadius: "10px",
+                            fontSize: "0.85rem",
+                            backgroundColor: "#f8fafc",
+                          },
+                        }}
+                      />
+                      <Button
+                        variant="outlined"
+                        fullWidth
+                        size="small"
+                        onClick={() => handleReviewSubmit(course._id)}
+                        sx={{
+                          textTransform: "none",
+                          fontWeight: 600,
+                          borderColor: COLORS.primary,
+                          color: COLORS.primary,
+                          borderRadius: "10px",
+                          "&:hover": {
+                            borderColor: COLORS.primaryDark,
+                            backgroundColor: "rgba(79,70,229,0.04)",
+                          },
+                        }}
+                      >
+                        Submit Review
+                      </Button>
+                    </Box>
+                  ) : (
+                    <Box
+                      sx={{
+                        mb: 2,
+                        p: 1.5,
+                        borderRadius: "10px",
+                        background: "#f8fafc",
+                        border: "1px dashed #cbd5e1",
+                        textAlign: "center",
+                      }}
+                    >
+                      <Typography
+                        sx={{ fontSize: "0.75rem", color: COLORS.textMuted, fontWeight: 500 }}
+                      >
+                        🔒 Enroll to leave a review
+                      </Typography>
+                    </Box>
+                  )}
+
+                  {/* ─── Action Buttons ─── */}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      gap: 1,
+                      mt: "auto",
+                    }}
+                  >
+                    <Button
+                      variant="outlined"
+                      fullWidth
+                      startIcon={<InfoOutlined />}
+                      onClick={() => goToDetails(course)}
+                      sx={{
+                        textTransform: "none",
+                        fontWeight: 600,
+                        fontSize: "0.8rem",
+                        borderColor: "#cbd5e1",
+                        color: COLORS.textMuted,
+                        borderRadius: "10px",
+                        py: 1,
+                        "&:hover": {
+                          borderColor: COLORS.primary,
+                          color: COLORS.primary,
+                          backgroundColor: "rgba(79,70,229,0.04)",
+                        },
+                      }}
+                    >
+                      Details
+                    </Button>
+
+                    {isEnrolled ? (
+                      <Button
+                        variant="contained"
+                        fullWidth
+                        startIcon={<PlayCircleOutline />}
+                        onClick={() => navigate(`/user/lect/${course._id}`)}
+                        sx={{
+                          background: COLORS.gradient,
+                          textTransform: "none",
+                          fontWeight: 700,
+                          fontSize: "0.8rem",
+                          borderRadius: "10px",
+                          py: 1,
+                          boxShadow: `0 4px 12px ${COLORS.shadow}`,
+                          "&:hover": {
+                            background:
+                              "linear-gradient(135deg, #4338ca 0%, #7c3aed 100%)",
+                          },
+                        }}
+                      >
+                        Continue
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="contained"
+                        fullWidth
+                        onClick={() => enrollInCourse(course)}
+                        sx={{
+                          background: COLORS.gradient,
+                          textTransform: "none",
+                          fontWeight: 700,
+                          fontSize: "0.8rem",
+                          borderRadius: "10px",
+                          py: 1,
+                          boxShadow: `0 4px 12px ${COLORS.shadow}`,
+                          "&:hover": {
+                            background:
+                              "linear-gradient(135deg, #4338ca 0%, #7c3aed 100%)",
+                          },
+                        }}
+                      >
+                        {course.coursePrice > 0 ? "Enroll" : "Enroll Free"}
+                      </Button>
+                    )}
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          );
+        })}
+      </Grid>
+    </Box>
   );
 };
 
